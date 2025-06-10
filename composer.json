@@ -1,0 +1,14 @@
+{
+    "name": "proyecto-sofia/testing",
+    "description": "Proyecto de pruebas en PHP puro",
+    "type": "project",
+    "require": {
+        "php": ">=7.4"
+    },
+    "authors": [
+        {
+            "name": "Usuario",
+            "email": "encisogarciaelisabetsofia@gmail.com"
+        }
+    ]
+}
