@@ -1,14 +1,5 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>ResiControl - Recuperar Contraseña</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
 
-</head>
-<body class="body-recuperar">
+<div class="body-recuperar">
 <div class="login-wrapper">
     <div class="login-card">
         <div class="login-image">
@@ -43,5 +34,4 @@
         </div>
     </div>
 </div>
-</body>
-</html>
+</div>

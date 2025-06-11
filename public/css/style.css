@@ -63,6 +63,8 @@ body.body-login {
     height: 100%;
     justify-content: center;
     align-items: center;
+    padding: 20px;
+    overflow-y: auto; /* Permitir scroll si se necesita */
 }
 
 .login-card {
@@ -71,14 +73,15 @@ body.body-login {
     flex-direction: row;
     border-radius: 10px;
     overflow: hidden;
-    width: 900px;
+    max-width: 900px;
+    width: 100%;
+    min-height: 620px; /* ✅ Altura mínima más grande */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    position: relative;
 }
 
 .login-image {
     width: 50%;
-    background-image: url('../assets/img/img.png'); /* tu imagen de conjunto aquí */
+    background-image: url('../assets/img/img.png');
     background-size: cover;
     background-position: center;
     position: relative;
@@ -97,9 +100,14 @@ body.body-login {
 .login-form {
     width: 50%;
     padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow-y: auto; /* ✅ Por si hay mucho contenido */
 }
 
-.form-control, .form-select {
+.form-control,
+.form-select {
     border: 2px solid #2d0eb8;
     border-radius: 10px;
 }
@@ -108,15 +116,28 @@ body.body-login {
     background-color: #2d0eb8;
     border: none;
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     color: white;
+    font-weight: bold;
     border-radius: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-login:hover {
+    background-color: #1c0790;
 }
 
 a {
     color: #2d0eb8;
     font-size: 0.9rem;
+    text-decoration: none;
 }
+
+a:hover {
+    text-decoration: underline;
+}
+
+
 
 /* Estilos para recuperar contraseña*/
 body.body-recuperar {
