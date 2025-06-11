@@ -112,6 +112,12 @@ body.body-login {
     border-radius: 10px;
 }
 
+.border-login{
+    border: 2px solid #2d0eb8;
+    border-radius: 10px;
+    
+}
+
 .btn-login {
     background-color: #2d0eb8;
     border: none;
