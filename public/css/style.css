@@ -1,3 +1,4 @@
+/* Estilos para estilos generales */
 body{
     min-width: 100vh;
     display: flex;
@@ -18,7 +19,7 @@ footer{
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
  
-/* Estilos para el formulario de login */
+
 .card.shadow-sm {
     border: none;
     transition: transform 0.2s;
@@ -50,4 +51,248 @@ footer{
     padding: 0.8rem;
 }
  
-/* Puedes agregar más estilos personalizados aquí */
+/* estilos para login */
+body.body-login {
+    background-color: #2d0eb8;
+    height: 100vh;
+    margin: 0;
+}
+
+.login-wrapper {
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-card {
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 900px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.login-image {
+    width: 50%;
+    background-image: url('../assets/img/img.png'); /* tu imagen de conjunto aquí */
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.logo-superior {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 5px 10px;
+    border-radius: 8px;
+}
+
+.login-form {
+    width: 50%;
+    padding: 40px;
+}
+
+.form-control, .form-select {
+    border: 2px solid #2d0eb8;
+    border-radius: 10px;
+}
+
+.btn-login {
+    background-color: #2d0eb8;
+    border: none;
+    width: 100%;
+    padding: 10px;
+    color: white;
+    border-radius: 10px;
+}
+
+a {
+    color: #2d0eb8;
+    font-size: 0.9rem;
+}
+
+/* Estilos para recuperar contraseña*/
+body.body-recuperar {
+    background-color: #2d0eb8;
+    height: 100vh;
+    margin: 0;
+}
+
+.login-wrapper {
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-card {
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 850px; /* Ancho ligeramente reducido */
+    height: 500px; /* Altura reducida */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.login-image {
+    width: 50%;
+    background-image: url('../assets/img/img.png');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.logo-superior {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+.login-form {
+    width: 50%;
+    padding: 40px; /* Padding reducido */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.form-control {
+    border: 2px solid #2d0eb8;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 0.95rem;
+}
+
+.btn-login {
+    background-color: #2d0eb8;
+    border: none;
+    width: 100%;
+    padding: 10px;
+    color: white;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    margin-top: 15px;
+}
+
+a {
+    color: #2d0eb8;
+    font-size: 0.85rem;
+}
+        
+.alert {
+    margin-top: 20px;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 0.9rem;
+}
+        
+h4 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    color:rgb(8, 8, 8);
+}
+        
+.form-label {
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #333;
+    font-size: 0.9rem;
+}
+        
+.text-muted {
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+}
+
+/* Estilos para el sobre nosotros */
+body.body-aboutme {
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Banner superior con imagen */
+.banner {
+    background-image: url('/assets/img/img.png');
+    background-size: cover;
+    background-position: center;
+    height: 400px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+}
+
+    .banner h1 {
+      font-weight: bold;
+      font-size: 3rem;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+    }
+
+    .banner p {
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin: auto;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+    }
+
+    /* Sección de contenido */
+    .about-section {
+      padding: 60px 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .accent-title {
+      color: #2d0eb8;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+    }
+
+    .big-title {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #000;
+    }
+
+    .btn-purple {
+      background-color: #2d0eb8;
+      color: white;
+      border-radius: 8px;
+      border: none;
+      padding: 10px 20px;
+    }
+
+    .btn-purple:hover {
+      background-color: #24129c;
+    }
+
+    footer {
+      background-color: #212529;
+      color: white;
+      padding: 20px;
+    }
+
+    footer a {
+      color: white;
+      margin-left: 15px;
+    }

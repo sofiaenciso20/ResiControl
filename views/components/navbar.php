@@ -10,7 +10,7 @@
                     <a class="nav-link <?php echo ($pagina_actual ?? '') === 'inicio' ? 'active' : ''; ?>" href="/">Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'acerca' ? 'active' : ''; ?>" href="/acerca">Acerca de</a>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'acerca' ? 'active' : ''; ?>" href="/sobre_nosotros.php">Sobre Nosotros</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link <?php echo ($pagina_actual ?? '') === 'contacto' ? 'active' : ''; ?>" href="/contacto">Contacto</a>
