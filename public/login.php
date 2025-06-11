@@ -13,20 +13,19 @@ date_default_timezone_set('America/Bogota');
 //inciar la sesion
 session_start();
 
-//usuarios de prueba
-$usuarios = [
-    ['email' => 'encisogarciaelisabetsofia@gmail.com',
-    'password' => 'admin12',
-    'role'=> 'admin'],
-    ['email' => 'cliente@gmail.com',
-    'password' => 'cliente123', 
-    'role'=> 'usuario']
-];
 
 // Usuarios de prueba
-$demo_users = [
-    ['email' => 'admin@example.com', 'password' => 'admin123', 'role' => 'admin'],
-    ['email' => 'usuario@example.com', 'password' => 'user123', 'role' => 'user']
+$usuarios = [
+    [
+        'email' => 'encisogarciaelisabetsofia@gmail.com',
+        'password' => 'admin12',
+        'role' => 'admin'
+    ],
+    [
+        'email' => 'cliente@gmail.com',
+        'password' => 'cliente123',
+        'role' => 'usuario'
+    ]
 ];
  
 // Manejar el envío del formulario
@@ -38,17 +37,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
     $remember = isset($_POST['remember']);
  
-    // Simular validación
+    // Validación de usuario
     $user = null;
-    foreach ($demo_users as $demo_user) {
-        if ($demo_user['email'] === $email && $demo_user['password'] === $password) {
-            $user = $demo_user;
+    foreach ($usuarios as $usuario) {
+        if ($usuario['email'] === $email && $usuario['password'] === $password) {
+            $user = $usuario;
             break;
         }
     }
  
     if ($user) {
-        // Simular inicio de sesión exitoso
+        // Inicio de sesión exitoso
         $_SESSION['user'] = [
             'email' => $user['email'],
             'role' => $user['role']
@@ -60,17 +59,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
  
         // Redirigir al dashboard
-        header('Location: /dashboard.php');
+        header('Location: dashboard.php');
         exit;
     } else {
         $error_message = 'Credenciales incorrectas. Por favor, intenta de nuevo.';
     }
 }
-
+ 
 //variables para la pagina
-$titulo = 'login';
+$titulo = 'Login - ResiControl';
 $pagina_actual = 'login';
-
+ 
 //contenido de la pagina
 ob_start();
 ?>
@@ -87,13 +86,13 @@ ob_start();
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
-
+ 
 <?php
-//importar el componente home
+//importar el componente login
 require_once __DIR__ . '/../views/components/login.php';
-
+ 
 //capturar el contenido de la pagina
 $contenido = ob_get_clean();
-
+ 
 //cargar layout principal
 require_once __DIR__ . '/../views/layout/main.php';

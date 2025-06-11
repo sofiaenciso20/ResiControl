@@ -3,7 +3,7 @@
 session_start();
 // Verificar si el usuario esta logueado
 if (!isset($_SESSION['user'])) {
-    header('Location: /login.php');
+    header('Location: login.php');
     exit;
 }
 
@@ -23,7 +23,7 @@ ob_start();
                     <p class="card-text">Has iniciado sesión como: <?php echo htmlspecialchars($user['email']); ?></p>
                     <p class="card-text">Rol: <?php echo htmlspecialchars($user['role']); ?></p>
                    
-                    <form action="/logout.php" method="POST" class="mt-4">
+                    <form action="logout.php" method="POST" class="mt-4">
                         <button type="submit" class="btn btn-danger">
                             <i class="bi bi-box-arrow-right me-2"></i>
                             Cerrar Sesión
@@ -37,4 +37,4 @@ ob_start();
 
 <?php
 $contenido = ob_get_clean();
-require_once __DIR__ . '/../views/layouts/main.php';
+require_once __DIR__ . '/../views/layout/main.php';
