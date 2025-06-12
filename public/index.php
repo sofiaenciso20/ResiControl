@@ -11,7 +11,7 @@ ini_set('display_errors', '1');
 date_default_timezone_set('America/Bogota');
 
 //variables para la pagina
-$titulo = 'mi proyecto PHP';
+$titulo = 'home';
 $pagina_actual = 'home';
 //contenido de la pagina
 ob_start();

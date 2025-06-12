@@ -18,7 +18,7 @@ session_start();
 $usuarios = [
     [
         'email' => 'encisogarciaelisabetsofia@gmail.com',
-        'password' => 'admin12',
+        'password' => 'admin1234',
         'role' => 'admin'
     ],
     [

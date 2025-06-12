@@ -32,11 +32,6 @@
                             </button>
                         </div>
                     </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="remember" name="remember"
-                               <?php echo isset($_COOKIE['user_email']) ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="remember">Recordarme</label>
-                    </div>
                     <button id="loginButton" type="submit" class="btn btn-login">Iniciar sesión</button>
                 </form>
                  <div class="mb-3 text-end">
@@ -74,7 +69,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     }
  
     // Validar contraseña
-    if (password.length < 6) {
+    if (password.length < 8) {
         alert('La contraseña debe tener al menos 6 caracteres');
         isValid = false;
     }

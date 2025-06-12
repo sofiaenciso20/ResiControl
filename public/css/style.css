@@ -1,55 +1,112 @@
-/* Estilos para estilos generales */
-body{
-    min-width: 100vh;
-    display: flex;
-    flex-direction: column;
+/*estilos navbar*/
+.navbar-brand img {
+  height: 40px;       /* Altura controlada */
+  width: auto;        /* Para mantener la proporción natural */
+  object-fit: contain;
+  margin-right: 10px; /* Separación con el texto */
+  display: inline-block;
+  vertical-align: middle;
 }
 
-footer{
-    margin-top: auto;
-  
+
+.navbar-nav .nav-link.active {
+  font-weight: bold;
+  color: #ffffff !important;
 }
 
-/* Ejemplo de personalización de Bootstrap */
-.navbar-brand {
-    font-weight: bold;
+.btn-outline-light.btn-sm {
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border-radius: 8px;
 }
- 
-.card {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
- 
 
-.card.shadow-sm {
-    border: none;
-    transition: transform 0.2s;
+
+
+
+/*estilos index*/
+.hero-banner {
+  background-image: url('../assets/img/img.png'); /* Ruta real de tu imagen */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 500px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
- 
-.card.shadow-sm:hover {
-    transform: translateY(-5px);
+
+.hero-banner .overlay {
+  background: rgba(0, 0, 0, 0.45);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
- 
-.input-group-text {
-    background-color: #f8f9fa;
-    border-right: none;
+
+.hero-banner .container {
+  position: relative;
+  z-index: 1;
+  color: white;
 }
- 
-.input-group .form-control {
-    border-left: none;
+
+.feature-card {
+  background: #f8f9ff;
+  border-radius: 12px;
+  padding: 25px 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: 0.3s ease-in-out;
+  border: 1px solid #dee2ff;
 }
- 
-.input-group .form-control:focus {
-    border-color: #dee2e6;
-    box-shadow: none;
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  background: #eef0ff;
 }
- 
-.input-group .form-control:focus + .input-group-text {
-    border-color: #dee2e6;
+
+.feature-card h5 {
+  color: #2d0eb8;
 }
- 
-.btn-primary {
-    padding: 0.8rem;
+
+.btn-custom {
+  background: rgba(45,14,184,0.95);
+  color: #fff;
+  font-weight: bold;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transition: background 0.3s;
 }
+
+.btn-custom:hover {
+  background: #fff !important;
+  color: #2d0eb8 !important;
+  border: 2px solid #2d0eb8;
+}
+
+/* Estilos para la lista de módulos */
+.list-modulos {
+  list-style: none;
+  padding-left: 0;
+}
+
+.list-modulos li {
+  padding: 12px 20px;
+  margin-bottom: 10px;
+  background: #f1f4ff;
+  border-left: 5px solid #2d0eb8;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: 0.2s;
+}
+
+.list-modulos li:hover {
+  background: #e3e9ff;
+}
+
+
+
+
  
 /* estilos para login */
 body.body-login {
@@ -57,6 +114,7 @@ body.body-login {
     height: 100vh;
     margin: 0;
 }
+
 
 .login-wrapper {
     display: flex;
@@ -145,7 +203,10 @@ a:hover {
 
 
 
+
+
 /* Estilos para recuperar contraseña*/
+
 body.body-recuperar {
     background-color: #2d0eb8;
     height: 100vh;
@@ -245,81 +306,107 @@ h4 {
     margin-bottom: 20px;
 }
 
+
+
+
+
+
+
 /* Estilos para el sobre nosotros */
+
 body.body-aboutme {
-    background-color: #ffffff;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', sans-serif;
+  background-color: #ffffff;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
 }
+
 
 /* Banner superior con imagen */
-.banner {
-    background-image: url('/assets/img/img.png');
-    background-size: cover;
-    background-position: center;
-    height: 400px;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 20px;
+.banner{
+  background-image: url('../assets/img/img.png'); /* Ajusta la ruta si es necesario */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 500px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
 }
 
-    .banner h1 {
-      font-weight: bold;
-      font-size: 3rem;
-      text-shadow: 2px 2px 5px rgba(0,0,0,0.4);
-    }
 
-    .banner p {
-      font-size: 1.2rem;
-      max-width: 700px;
-      margin: auto;
-      text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
-    }
 
-    /* Sección de contenido */
-    .about-section {
-      padding: 60px 20px;
-      max-width: 1200px;
-      margin: auto;
-    }
+.banner.overlay {
+  background: rgba(0, 0, 0, 0.45);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
 
-    .accent-title {
-      color: #2d0eb8;
-      font-weight: bold;
-      text-transform: uppercase;
-      font-size: 1.2rem;
-      letter-spacing: 1px;
-    }
+.banner.container {
+  position: relative;
+  z-index: 1;
+  color: white;
+}
 
-    .big-title {
-      font-size: 2rem;
-      font-weight: bold;
-      color: #000;
-    }
 
-    .btn-purple {
-      background-color: #2d0eb8;
-      color: white;
-      border-radius: 8px;
-      border: none;
-      padding: 10px 20px;
-    }
+/* Título del banner */
+.banner h1 {
+  font-weight: bold;
+  font-size: 3rem;
+  color: white;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+  margin-bottom: 15px;
+}
 
-    .btn-purple:hover {
-      background-color: #24129c;
-    }
+/* Párrafo del banner */
+.banner p {
+  font-size: 1.2rem;
+  max-width: 700px;
+  margin: auto;
+  color: white;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+}
 
-    footer {
-      background-color: #212529;
-      color: white;
-      padding: 20px;
-    }
+/* Sección de contenido de 'Sobre Mí' */
+.about-section {
+  padding: 60px 20px;
+  max-width: 1200px;
+  margin: auto;
+}
 
-    footer a {
-      color: white;
-      margin-left: 15px;
-    }
+/* Título pequeño decorativo */
+.accent-title {
+  color: #2d0eb8;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+}
+
+/* Título principal grande */
+.big-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #000;
+}
+
+/* Botón morado personalizado */
+.btn-purple {
+  background-color: #2d0eb8;
+  color: white;
+  border-radius: 8px;
+  border: none;
+  padding: 10px 20px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-purple:hover {
+  background-color: #24129c;
+}
+
