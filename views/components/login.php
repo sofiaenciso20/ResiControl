@@ -1,9 +1,10 @@
+
 <div class="body-login">
     <div class="login-wrapper">
         <div class="login-card">
             <div class="login-image">
                 <div class="logo-superior">
-                    <img src="assets/img/logo.png" alt="Logo ResiControl" style="height: 50px;">
+                    <img src="assets/img/logo2.png" alt="Logo ResiControl" style="height: 50px;">
                 </div>
             </div>
             <div class="login-form">
@@ -11,12 +12,11 @@
                     <h4 class="mt-2">Iniciar sesión</h4>
                 </div>
                 <form method="POST" action="/login.php" id="loginForm">
-                    
                     <div class="mb-3">
                         <label class="form-label">Correo electrónico</label>
                         <input type="email" class="form-control" id="email" name="email" required
-                                   placeholder="ejemplo@correo.com"
-                                   value="<?php echo isset($_COOKIE['user_email']) ? htmlspecialchars($_COOKIE['user_email']) : ''; ?>">
+                            placeholder="ejemplo@correo.com"
+                            value="<?php echo isset($_COOKIE['user_email']) ? htmlspecialchars($_COOKIE['user_email']) : ''; ?>">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Contraseña</label>
@@ -33,19 +33,18 @@
                         </div>
                     </div>
                     <button id="loginButton" type="submit" class="btn btn-login">Iniciar sesión</button>
-                </form>
-                 <div class="mb-3 text-end">
+                    <div class="mb-3 text-end">
                         <a href="recuperar_contra.php">¿Olvidaste la contraseña?</a>
                     </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 <script>
-    function togglePassword() {
+function togglePassword() {
     const passwordInput = document.getElementById('password');
     const icon = document.querySelector('.btn-outline-secondary i');
-   
     if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
         icon.classList.replace('bi-eye', 'bi-eye-slash');
@@ -56,24 +55,22 @@
 }
 // Validación del formulario en el cliente
 document.getElementById('loginForm').addEventListener('submit', function(event) {
-    console.log('submit');
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
-    console.log(email, password);
     let isValid = true;
- 
+
     // Validar email
     if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
         alert('Por favor, ingresa un correo electrónico válido');
         isValid = false;
     }
- 
+
     // Validar contraseña
     if (password.length < 8) {
-        alert('La contraseña debe tener al menos 6 caracteres');
+        alert('La contraseña debe tener al menos 8 caracteres');
         isValid = false;
     }
- 
+
     if (!isValid) {
         event.preventDefault();
     } else {
@@ -85,6 +82,4 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         `;
     }
 });
- 
-
 </script>

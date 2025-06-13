@@ -4,7 +4,7 @@
     <div class="login-card">
         <div class="login-image">
             <div class="logo-superior">
-                <img src="assets/img/logo.png" alt="Logo ResiControl" style="height: 50px;">
+                <img src="assets/img/logo2.png" alt="Logo ResiControl" style="height: 50px;">
             </div>
         </div>
         <div class="login-form">

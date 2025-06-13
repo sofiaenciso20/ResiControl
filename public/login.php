@@ -17,11 +17,14 @@ session_start();
 // Usuarios de prueba
 $usuarios = [
     [
+        'name' => 'Sofia Enciso ',
         'email' => 'encisogarciaelisabetsofia@gmail.com',
         'password' => 'admin1234',
         'role' => 'admin'
+    
     ],
     [
+        'name'=> 'nome',
         'email' => 'cliente@gmail.com',
         'password' => 'cliente123',
         'role' => 'usuario'
@@ -48,7 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
  
     if ($user) {
         // Inicio de sesión exitoso
+         $_SESSION['is_logged_in'] = true;
         $_SESSION['user'] = [
+            'name' => $user['name'],
             'email' => $user['email'],
             'role' => $user['role']
         ];

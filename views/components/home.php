@@ -15,25 +15,25 @@
   </section>
 
   <!-- Funcionalidades -->
-  <<section id="funcionalidades" class="container py-5">
-  <h2 class="text-center mb-5 fw-bold">¿Qué puedes hacer con ResiControl?</h2>
+  <section id="funcionalidades" class="container py-5">
+  <h2 class="text-center mb-5 fw-bold">Funcionalidades principales de ResiControl</h2>
   <div class="row text-center">
     <div class="col-md-4 mb-4 d-flex">
       <div class="feature-card w-100">
-        <h5>👤 Administración de Residentes</h5>
-        <p>Lleva un registro organizado de los residentes y sus núcleos familiares por apartamento.</p>
+        <h5>👤 Gestión integral de residentes</h5>
+        <p>Permite registrar y administrar la información personal de los residentes y su grupo familiar, asociados a cada unidad habitacional.</p>
       </div>
     </div>
     <div class="col-md-4 mb-4 d-flex">
       <div class="feature-card w-100">
-        <h5>🚗 Control de Vehículos</h5>
-        <p>Registra y gestiona la información de los vehículos asignados a cada residente.</p>
+        <h5>🚗 Registro y control vehicular</h5>
+        <p>Facilita la asignación y seguimiento de los vehículos pertenecientes a los residentes, incluyendo datos como placa, tipo y color.</p>
       </div>
     </div>
     <div class="col-md-4 mb-4 d-flex">
       <div class="feature-card w-100">
-        <h5>📨 Gestión de Visitas y Encomiendas</h5>
-        <p>Administra los permisos de ingreso y informa sobre entregas y paquetes.</p>
+        <h5>📨 Administración de permisos y encomiendas</h5>
+        <p>Optimiza el control de ingresos autorizados y permite registrar la recepción de paquetes, brindando mayor organización y seguridad.</p>
       </div>
     </div>
   </div>
