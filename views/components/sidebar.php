@@ -24,6 +24,10 @@
                         <div class="sb-nav-link-icon"><i class="fas fa-map-marker-alt"></i></div>
                         Registro de Zona
                     </a>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro_terreno' ? 'active' : ''; ?>" href="/registro_terreno.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
+                        Registro de Terreno
+                    </a>
                     </div>
                     
             </div>

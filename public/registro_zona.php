@@ -1,9 +1,9 @@
 <?php
  
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../src/Controllers/PersonaController.php';
+require_once __DIR__ . '/../src/Controllers/ZonaController.php';
  
-$controller = new PersonaController();
+$controller = new zonaController();
 $mensaje = $controller->registrar();
  
 $titulo = 'Registro de zona';
