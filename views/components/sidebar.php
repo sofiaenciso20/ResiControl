@@ -16,7 +16,11 @@
                         <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                         contactanos
                     </a>
-                </div>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>" href="/registro_persona.php">
+                    <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
+                    Registro de Persona
+                    </a>
+                    </div>
             </div>
             <div class="sb-sidenav-footer">
                 <div class="small">Estado:</div>

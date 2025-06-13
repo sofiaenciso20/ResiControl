@@ -8,7 +8,7 @@
                 <ul class="list-inline text-md-end mb-0">
                     <li class="list-inline-item"><a href="/privacidad" class="text-white">Privacidad</a></li>
                     <li class="list-inline-item"><a href="/terminos" class="text-white">Términos</a></li>
-                    <li class="list-inline-item"><a href="/contacto" class="text-white">Contacto</a></li>
+                    <li class="list-inline-item"><a href="/contactanos.php" class="text-white">Contacto</a></li>
                 </ul>
             </div>
         </div>

@@ -41,10 +41,10 @@
         <div class="card contact-info-card p-4">
           <div class="card-body">
             <h3 class="form-title">Información de contacto</h3>
-            <p><strong>📧 Correo:</strong> <a href="mailto:rresicontrol@gmail.com">rresicontrol@gmail.com</a></p>
-            <p><strong>📞 Teléfono:</strong> +57 3022927343</p>
-            <p><strong>📍 Dirección:</strong> Calle 123 #45-67, Ibagué, Tolima</p>
-            <p><strong>⏰ Horario de atención:</strong><br> Lunes a Viernes<br> 8:00 a.m. - 5:00 p.m.</p>
+            <p><strong>Correo:</strong> <a href="mailto:rresicontrol@gmail.com">rresicontrol@gmail.com</a></p>
+            <p><strong>Teléfono:</strong> +57 3022927343</p>
+            <p><strong>Dirección:</strong> Calle 123 #45-67, Ibagué, Tolima</p>
+            <p><strong>Horario de atención:</strong><br> Lunes a Viernes<br> 8:00 a.m. - 5:00 p.m.</p>
           </div>
         </div>
       </div>
