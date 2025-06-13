@@ -17,10 +17,15 @@
                         contactanos
                     </a>
                     <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>" href="/registro_persona.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
-                    Registro de Persona
+                        <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
+                        Registro de Persona
+                    </a>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro_zona' ? 'active' : ''; ?>" href="/registro_zona.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        Registro de Zona
                     </a>
                     </div>
+                    
             </div>
             <div class="sb-sidenav-footer">
                 <div class="small">Estado:</div>
