@@ -28,6 +28,22 @@
                         <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
                         Registro de Terreno
                     </a>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'historial_visitas' ? 'active' : ''; ?>" href="/historial_visitas.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
+                        Historial de Visitas
+                    </a>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'gestion_reservas' ? 'active' : ''; ?>" href="/gestion_reservas.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
+                        Gestion de Reservas
+                    </a>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'gestion_residentes' ? 'active' : ''; ?>" href="/gestion_residentes.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
+                        Gestion de Residentes
+                    </a>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro_paquete' ? 'active' : ''; ?>" href="/registro_paquete.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
+                        Registro de Paquete
+                    </a>
                     </div>
                     
             </div>
