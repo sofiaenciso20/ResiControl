@@ -6,6 +6,11 @@
                     <h4 class="mb-0">Registro de Persona</h4>
                 </div>
                 <div class="card-body">
+                <?php if (!empty($mensaje)): ?>
+                        <div class="alert alert-info">
+                            <?php echo htmlspecialchars($mensaje); ?>
+                        </div>
+                    <?php endif; ?>
                     <form method="POST" action="/registro_persona.php">
                         <!-- Tipo de Usuario -->
                         <div class="mb-3">
@@ -17,7 +22,7 @@
                                 <option value="administrador">Administrador</option>
                             </select>
                         </div>
-
+ 
                         <!-- Campos comunes -->
                         <div class="mb-3">
                             <label class="form-label">Nombre</label>
@@ -35,9 +40,9 @@
                             <label class="form-label">Tipo de Identificación</label>
                             <select class="form-select" name="tipo_identificacion" required>
                                 <option value="">Selecciona</option>
-                                <option value="C.C">C.C</option>
-                                <option value="T.I">T.I</option>
-                                <option value="C.E">C.E</option>
+                                <option value="1">C.C</option>
+                                <option value="2">T.I</option>
+                                <option value="3">C.E</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -52,7 +57,7 @@
                             <label class="form-label">Contraseña</label>
                             <input type="password" class="form-control" name="contrasena" required>
                         </div>
-
+ 
                         <!-- Campos dinámicos según tipo de usuario -->
                         <div id="campos_vigilante" style="display: none;">
                             <div class="mb-3">
@@ -60,15 +65,11 @@
                                 <input type="text" class="form-control" name="empresa">
                             </div>
                         </div>
-
+ 
                         <div id="campos_habitante" style="display: none;">
                             <div class="mb-3">
                                 <label class="form-label">Dirección de la Casa</label>
                                 <input type="text" class="form-control" name="direccion_casa">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Manzana</label>
-                                <input type="text" class="form-control" name="manzana">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Cantidad de Personas</label>
@@ -86,14 +87,14 @@
                                 <input type="number" class="form-control" name="cantidad_animales">
                             </div>
                         </div>
-
+ 
                         <div id="campos_administrador" style="display: none;">
                             <div class="mb-3">
                                 <label class="form-label">Dirección de Residencia</label>
                                 <input type="text" class="form-control" name="direccion_residencia">
                             </div>
                         </div>
-
+ 
                         <button type="submit" class="btn btn-primary">Registrar</button>
                     </form>
                 </div>
@@ -101,7 +102,7 @@
         </div>
     </div>
 </div>
-
+ 
 <script>
 document.getElementById('tipo_usuario').addEventListener('change', function() {
     const tipo = this.value;
@@ -109,7 +110,7 @@ document.getElementById('tipo_usuario').addEventListener('change', function() {
     document.getElementById('campos_habitante').style.display = tipo === 'habitante' ? 'block' : 'none';
     document.getElementById('campos_administrador').style.display = tipo === 'administrador' ? 'block' : 'none';
 });
-
+ 
 document.querySelector('select[name="tiene_animales"]').addEventListener('change', function() {
     document.getElementById('cantidad_animales_div').style.display = this.value === 'si' ? 'block' : 'none';
 });
