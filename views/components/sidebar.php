@@ -44,6 +44,18 @@
                         <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
                         Registro de Paquete
                     </a>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro_visitas' ? 'active' : ''; ?>" href="/registro_visita.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
+                        Registro de Visitas
+                    </a>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'validar_visitas' ? 'active' : ''; ?>" href="/validar_visitas.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
+                        Validar Visitas
+                    </a>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro_reservas' ? 'active' : ''; ?>" href="/registro_reserva.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
+                        Registro de Reservas
+                    </a>
                     </div>
                     
             </div>

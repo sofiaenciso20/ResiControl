@@ -17,6 +17,7 @@
                 <th>Residente</th>
                 <th>Casa</th>
                 <th>Motivo</th>
+                <th>Hora</th>
                 <th>Acción</th>
               </tr>
             </thead>
@@ -28,6 +29,7 @@
                 <td>Paula García</td>
                 <td>A - 5</td>
                 <td>Entrega de documentos</td>
+                <td>2:00 p.m</td>
                 <td>
                   <a href="ver_visita.php?id=1" class="btn btn-sm btn-outline-secondary me-1" title="Ver"><i class="bi bi-eye"></i></a>
                   <a href="editar_visita.php?id=1" class="btn btn-sm btn-outline-primary me-1" title="Editar"><i class="bi bi-pencil"></i></a>
