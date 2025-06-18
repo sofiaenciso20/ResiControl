@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 18-06-2025 a las 01:45:40
+-- Tiempo de generación: 18-06-2025 a las 13:46:19
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -57,29 +57,6 @@ CREATE TABLE `empresa` (
 INSERT INTO `empresa` (`nit`, `empresa`) VALUES
 (0, 'condominio filadelfia'),
 (800123456, 'Securitas Ltda');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `encomiendas`
---
-
-CREATE TABLE `encomiendas` (
-  `id_encomiendas` int(11) NOT NULL,
-  `id_usuarios` int(11) DEFAULT NULL,
-  `id_vigilante` int(11) DEFAULT NULL,
-  `descripcion` text DEFAULT NULL,
-  `fech_hor_recep` datetime DEFAULT NULL,
-  `fech_hor_entre` datetime DEFAULT NULL,
-  `id_estado` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `encomiendas`
---
-
-INSERT INTO `encomiendas` (`id_encomiendas`, `id_usuarios`, `id_vigilante`, `descripcion`, `fech_hor_recep`, `fech_hor_entre`, `id_estado`) VALUES
-(1, 1012353162, 1106226099, 'Paquete de Amazon', '2025-06-07 08:15:00', '2025-06-07 12:00:00', 2);
 
 -- --------------------------------------------------------
 
@@ -229,6 +206,30 @@ INSERT INTO `motivo_zonas` (`id_mot_zonas`, `motivo_zonas`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `paquetes`
+--
+
+CREATE TABLE `paquetes` (
+  `id_encomiendas` int(11) NOT NULL,
+  `nombre_residente` varchar(100) NOT NULL,
+  `nombre_vigilante` varchar(100) NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `fech_hor_recep` datetime DEFAULT NULL,
+  `fech_hor_entre` datetime DEFAULT NULL,
+  `id_estado` int(11) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `paquetes`
+--
+
+INSERT INTO `paquetes` (`id_encomiendas`, `nombre_residente`, `nombre_vigilante`, `descripcion`, `fech_hor_recep`, `fech_hor_entre`, `id_estado`) VALUES
+(1, 'sofia', 'pedro', 'qwertyuipoiuytrew', '2025-06-18 06:37:00', NULL, 1),
+(7, 'paula', 'pedro', 'wertyuioiuytrdes', '2025-06-18 06:40:00', NULL, 1);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `reservas`
 --
 
@@ -370,6 +371,7 @@ CREATE TABLE `usuarios` (
 INSERT INTO `usuarios` (`documento`, `id_tipo_doc`, `nombre`, `apellido`, `telefono`, `correo`, `contrasena`, `id_rol`, `id_estado`, `id_manzana`, `fecha_registro`, `nit`, `empresa`, `direccion_casa`, `cantidad_personas`, `tiene_animales`, `cantidad_animales`, `direccion_residencia`) VALUES
 (1012353162, 1, 'sofia', 'enciso', 3022927343, 'encisogarciaelisabetsofia@gmail.com', '$2y$10$PBKd6/jumgKjSwoPx/POCe2wJwMzSHSjeoQaFiSK/owh6XEQn8Ise', 3, 2, 1, '2025-06-07 10:32:44', 800123456, NULL, NULL, NULL, NULL, NULL, NULL),
 (1012353163, 1, 'elisabet', 'enciso', 3022927344, 'encisogarciaeli@gmail.com', '$2y$10$10Igrl0om.eertk.D/IoL.uAKjRqxHMQIxIdf9sx.Fq9TTZANDf6q', 2, 1, 1, '2025-06-07 10:32:44', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(1012353169, 1, 'elisabet', 'Enciso', 3022927343, 'encisogarciaelisabetsofia@gmail.com', '$2y$10$hsAGUIvOvCzsxEKfUnuAX.YLygp53NNtPYb9NNO/VFu/c9SOcuFlS', 3, 1, NULL, NULL, NULL, '', 'Manzana L casa 32 Tolima Grande', 6, 'si', 2, ''),
 (1106226099, 2, 'luisa', 'enciso', 3144644540, 'luisaegar25@gmail.com', '$2y$10$jIkCl2CW6iMNLPzilguYvO2yvQRx./2J2PkBUoCQSTdaIgy55qMpi', 4, 2, 1, '2025-06-07 10:32:44', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
@@ -462,14 +464,6 @@ ALTER TABLE `empresa`
   ADD PRIMARY KEY (`nit`);
 
 --
--- Indices de la tabla `encomiendas`
---
-ALTER TABLE `encomiendas`
-  ADD PRIMARY KEY (`id_encomiendas`),
-  ADD KEY `id_usuarios` (`id_usuarios`),
-  ADD KEY `id_estado` (`id_estado`);
-
---
 -- Indices de la tabla `estado`
 --
 ALTER TABLE `estado`
@@ -513,6 +507,13 @@ ALTER TABLE `motivo_visita`
 --
 ALTER TABLE `motivo_zonas`
   ADD PRIMARY KEY (`id_mot_zonas`);
+
+--
+-- Indices de la tabla `paquetes`
+--
+ALTER TABLE `paquetes`
+  ADD PRIMARY KEY (`id_encomiendas`),
+  ADD KEY `id_estado` (`id_estado`);
 
 --
 -- Indices de la tabla `reservas`
@@ -585,15 +586,18 @@ ALTER TABLE `zonas_comunes`
   ADD PRIMARY KEY (`id_zonas_comu`);
 
 --
--- Restricciones para tablas volcadas
+-- AUTO_INCREMENT de las tablas volcadas
 --
 
 --
--- Filtros para la tabla `encomiendas`
+-- AUTO_INCREMENT de la tabla `paquetes`
 --
-ALTER TABLE `encomiendas`
-  ADD CONSTRAINT `encomiendas_ibfk_1` FOREIGN KEY (`id_usuarios`) REFERENCES `usuarios` (`documento`),
-  ADD CONSTRAINT `encomiendas_ibfk_2` FOREIGN KEY (`id_estado`) REFERENCES `estado` (`id_estado`);
+ALTER TABLE `paquetes`
+  MODIFY `id_encomiendas` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- Restricciones para tablas volcadas
+--
 
 --
 -- Filtros para la tabla `licencias`
@@ -607,6 +611,12 @@ ALTER TABLE `licencias`
 --
 ALTER TABLE `manzana`
   ADD CONSTRAINT `manzana_ibfk_1` FOREIGN KEY (`id_casa`) REFERENCES `casa` (`id_casa`);
+
+--
+-- Filtros para la tabla `paquetes`
+--
+ALTER TABLE `paquetes`
+  ADD CONSTRAINT `paquetes_ibfk_1` FOREIGN KEY (`id_estado`) REFERENCES `estado` (`id_estado`);
 
 --
 -- Filtros para la tabla `reservas`
