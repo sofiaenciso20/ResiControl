@@ -1,3 +1,21 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../../src/Controllers/ZonaController.php'; // Incluye el controlador, no lo declares aquí
+
+use App\Config\Database; // Solo si usas namespaces
+
+// Cargar datos usando el controlador
+$zonaCtrl = new ZonaController();
+$zonas = $zonaCtrl->zonas;
+$horarios = $zonaCtrl->horarios;
+$motivos = $zonaCtrl->motivos;
+$residentes = $zonaCtrl->residentes;
+$mensaje = $_SESSION['mensaje_zona'] ?? null;
+unset($_SESSION['mensaje_zona']);
+?>
+
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-md-8">
@@ -6,7 +24,12 @@
           <h4 class="mb-0">Registro de Zona Pública</h4>
         </div>
         <div class="card-body">
-          <form method="POST">
+
+          <?php if ($mensaje): ?>
+            <div class="alert alert-info text-center"><?= $mensaje ?></div>
+          <?php endif; ?>
+
+          <form method="POST" action="/registro_zona.php">
             <div class="mb-3">
               <label class="form-label">Zona</label>
               <select class="form-select" name="id_zonas_comu" required>

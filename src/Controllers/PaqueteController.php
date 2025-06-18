@@ -1,21 +1,7 @@
 <?php
+session_start();
 require_once __DIR__ . '/../config/Database.php';
 use App\Config\Database;
-
-$db = new Database();
-$conn = $db->getConnection();
-
-// Residentes (habitantes)
-$sqlResidentes = "SELECT documento, CONCAT(nombre, ' ', apellido) AS nombre_completo 
-                  FROM usuarios 
-                  WHERE id_rol = 3 AND id_estado = 1";
-$residentes = $conn->query($sqlResidentes)->fetchAll(PDO::FETCH_ASSOC);
-
-// Vigilantes
-$sqlVigilantes = "SELECT documento, CONCAT(nombre, ' ', apellido) AS nombre_completo 
-                  FROM usuarios 
-                  WHERE id_rol = 4 AND id_estado = 1";
-$vigilantes = $conn->query($sqlVigilantes)->fetchAll(PDO::FETCH_ASSOC);
 
 class PaqueteController {
     public function registrar() {
@@ -27,7 +13,7 @@ class PaqueteController {
             $id_vigilante = $_POST['id_vigilante'];
             $descripcion = $_POST['descripcion'] ?? null;
             $fech_hor_recep = $_POST['fech_hor_recep'];
-            $id_estado = 1; // Pendiente por defecto
+            $id_estado = 1;
 
             $sql = "INSERT INTO paquetes 
                     (id_usuarios, id_vigilante, descripcion, fech_hor_recep, fech_hor_entre, id_estado)
@@ -42,14 +28,17 @@ class PaqueteController {
             $stmt->bindParam(':id_estado', $id_estado);
 
             if ($stmt->execute()) {
-                echo "¡Paquete registrado exitosamente!";
-                // Puedes hacer un header("Location: paquetes.php"); si tienes una lista
+                $_SESSION['mensaje_paquete'] = "✅ ¡Paquete registrado exitosamente!";
             } else {
-                echo "Error al registrar el paquete.";
+                $_SESSION['mensaje_paquete'] = "❌ Error al registrar el paquete.";
             }
+
+            header("Location: /registro_paquete.php");
+            exit();
         }
     }
 }
 
+// Ejecutar
 $controller = new PaqueteController();
 $controller->registrar();

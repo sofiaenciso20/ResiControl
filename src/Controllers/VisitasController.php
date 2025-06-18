@@ -1,83 +1,56 @@
 <?php
-// VisitasController.php
-// Versión sin conexión a base de datos. Simula operaciones de CRUD.
+session_start();
+require_once __DIR__ . '/../config/Database.php';
+use App\Config\Database;
 
-class VisitasController {
+class VisitaController {
+    public function registrar() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $db = new Database();
+            $conn = $db->getConnection();
 
-    private $visitas = [];
+            $nombre = $_POST['nombre'] ?? '';
+            $apellido = $_POST['apellido'] ?? '';
+            $documento = $_POST['documento'] ?? '';
+            $id_usuarios = $_POST['id_usuarios'] ?? null;
+            $id_mot_visi = $_POST['id_mot_visi'] ?? null;
+            $fecha_ingreso = $_POST['fecha_ingreso'] ?? null;
+            $hora_ingreso = $_POST['hora_ingreso'] ?? null;
+            $fecha_soli = date('Y-m-d');
+            $id_estado = 1; // Pendiente
+            $codigo = 'VIS' . strtoupper(substr(uniqid(), -4)); // Ej: VISA1B2
 
-    public function __construct() {
-        // Simulación de datos cargados (puedes eliminar este bloque si usarás BD)
-        $this->visitas = [
-            [
-                'id' => 1,
-                'fecha' => '2025-06-05',
-                'visitante' => 'Luis Mora',
-                'residente' => 'Sofía Enciso',
-                'casa' => 'C - 3'
-            ],
-            [
-                'id' => 2,
-                'fecha' => '2025-06-07',
-                'visitante' => 'Juan Vallejo',
-                'residente' => 'Paula García',
-                'casa' => 'A - 5'
-            ]
-        ];
-    }
+            $sql = "INSERT INTO visitas (
+                        nombre, apellido, documento, id_usuarios, id_mot_visi,
+                        fecha_ingreso, hora_ingreso, fecha_soli, codigo, id_estado
+                    ) VALUES (
+                        :nombre, :apellido, :documento, :id_usuarios, :id_mot_visi,
+                        :fecha_ingreso, :hora_ingreso, :fecha_soli, :codigo, :id_estado
+                    )";
 
-    // Listar todas las visitas
-    public function index() {
-        return $this->visitas;
-    }
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':nombre', $nombre);
+            $stmt->bindParam(':apellido', $apellido);
+            $stmt->bindParam(':documento', $documento);
+            $stmt->bindParam(':id_usuarios', $id_usuarios);
+            $stmt->bindParam(':id_mot_visi', $id_mot_visi);
+            $stmt->bindParam(':fecha_ingreso', $fecha_ingreso);
+            $stmt->bindParam(':hora_ingreso', $hora_ingreso);
+            $stmt->bindParam(':fecha_soli', $fecha_soli);
+            $stmt->bindParam(':codigo', $codigo);
+            $stmt->bindParam(':id_estado', $id_estado);
 
-    // Registrar nueva visita
-    public function store($data) {
-        // Aquí deberías guardar en la BD, pero ahora solo simulamos
-        $nueva = [
-            'id' => count($this->visitas) + 1,
-            'fecha' => $data['fecha'],
-            'visitante' => $data['visitante'],
-            'residente' => $data['residente'],
-            'casa' => $data['casa']
-        ];
-        $this->visitas[] = $nueva;
-        return true;
-    }
-
-    // Obtener una visita por ID
-    public function show($id) {
-        foreach ($this->visitas as $visita) {
-            if ($visita['id'] == $id) {
-                return $visita;
+            if ($stmt->execute()) {
+                $_SESSION['mensaje_visita'] = "✅ ¡Visita registrada exitosamente!";
+            } else {
+                $_SESSION['mensaje_visita'] = "❌ Error al registrar la visita.";
             }
-        }
-        return null;
-    }
 
-    // Actualizar una visita
-    public function update($id, $data) {
-        foreach ($this->visitas as &$visita) {
-            if ($visita['id'] == $id) {
-                $visita['fecha'] = $data['fecha'];
-                $visita['visitante'] = $data['visitante'];
-                $visita['residente'] = $data['residente'];
-                $visita['casa'] = $data['casa'];
-                return true;
-            }
+            header("Location: /registro_visita.php");
+            exit();
         }
-        return false;
-    }
-
-    // Eliminar una visita
-    public function delete($id) {
-        foreach ($this->visitas as $index => $visita) {
-            if ($visita['id'] == $id) {
-                unset($this->visitas[$index]);
-                return true;
-            }
-        }
-        return false;
     }
 }
-?>
+
+$controller = new VisitaController();
+$controller->registrar();
