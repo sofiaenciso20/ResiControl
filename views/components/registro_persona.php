@@ -86,6 +86,33 @@
                                 <label class="form-label">Cantidad de Animales</label>
                                 <input type="number" class="form-control" name="cantidad_animales">
                             </div>
+                            <!-- Campos de vehículo SOLO para habitante -->
+                            <div class="mb-3">
+                                <label class="form-label">Tipo de Vehículo</label>
+                                <select class="form-select" name="id_tipo_vehi">
+                                    <option value="">Seleccione</option>
+                                    <?php foreach ($tipos as $tipo): ?>
+                                        <option value="<?= $tipo['id_tipo_vehi'] ?>"><?= htmlspecialchars($tipo['tipo_vehiculos']) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Placa</label>
+                                <input type="text" class="form-control" name="placa">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Marca</label>
+                                <select class="form-select" name="id_marca">
+                                    <option value="">Seleccione</option>
+                                    <?php foreach ($marcas as $marca): ?>
+                                        <option value="<?= $marca['id_marca'] ?>"><?= htmlspecialchars($marca['marca']) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Color</label>
+                                <input type="text" class="form-control" name="color">
+                            </div>
                         </div>
  
                         <div id="campos_administrador" style="display: none;">

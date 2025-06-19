@@ -56,6 +56,10 @@
                         <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
                         Registro de Reservas
                     </a>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'gestion_roles' ? 'active' : ''; ?>" href="/gestion_roles.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
+                        Gestion de Roles
+                    </a>
                     </div>
                     
             </div>
