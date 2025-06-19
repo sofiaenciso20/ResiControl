@@ -5,7 +5,7 @@
                 <div class="card-body">
                     <h1 class="card-title">Bienvenido al Dashboard</h1>
                     <p class="card-text">Has iniciado sesión como: <?php echo htmlspecialchars($user['email']); ?></p>
-                    <p class="card-text">Rol: <?php echo htmlspecialchars($user['role']); ?></p>
+                    <p class="card-text">Rol: <?php echo htmlspecialchars($rol_nombre); ?></p>
                    
                    
                 </div>

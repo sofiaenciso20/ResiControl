@@ -73,8 +73,9 @@ class PersonaController {
                 $stmt->bindParam(':tiene_animales', $tiene_animales);
                 $stmt->bindParam(':cantidad_animales', $cantidad_animales);
                 $stmt->bindParam(':direccion_residencia', $direccion_residencia);
-
+                //ejecuta la consulta
                 if (!$stmt->execute()) {
+                    //no deja cambiar cosas en la base de datos si hay un error
                     $conn->rollBack();
                     return "Error al registrar la persona.";
                 }
