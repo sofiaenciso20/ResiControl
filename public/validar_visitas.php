@@ -4,7 +4,10 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/Controllers/ValidarVisitasController.php';
 
 $controller = new ValidarVisitasController();
-$visitas = $controller->index(); // Cambiado aquí
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $controller->validar();
+}
+
 
 $titulo = 'Validar Visitas';
 $pagina_actual = 'validar_visitas';

@@ -2,6 +2,13 @@
 require_once __DIR__ . '/../src/Config/Database.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/Controllers/PersonaController.php';
+require_once __DIR__ . '/../src/Config/permissions.php';
+ 
+session_start();
+if (!tienePermiso('registro_persona')) {
+    header('Location: dashboard.php');
+    exit;
+}
 // Consulta las marcas
 $db = new \App\Config\Database();
 $conn = $db->getConnection();

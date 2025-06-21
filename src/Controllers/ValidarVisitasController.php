@@ -1,27 +1,42 @@
 <?php
+require_once __DIR__ . '/../config/Database.php';
+use App\Config\Database;
 
 class ValidarVisitasController {
-    public function index() {
-        // Retorna un array vacío o datos simulados
-        return [];
+    private $conn;
+
+    public function __construct() {
+        $db = new Database();
+        $this->conn = $db->getConnection();
     }
 
     public function validar() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $codigo = trim($_POST['codigo']);
 
-            // Códigos válidos simulados (podrías remplazarlos por una consulta en BD después)
-            $codigos_validos = ['ABC123', 'VISITA456', 'INVITADO789'];
+            $stmt = $this->conn->prepare("SELECT * FROM visitas WHERE codigo = :codigo");
+            $stmt->bindParam(':codigo', $codigo, PDO::PARAM_STR);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            if (in_array($codigo, $codigos_validos)) {
-                return "<h3 style='color: green;'>✅ Código válido. Acceso autorizado.</h3>
-                        <a href='../index.php'>Volver al inicio</a>";
+            if ($result && count($result) > 0) {
+                $_SESSION['mensaje_visita'] = "✅ Código válido. Acceso autorizado.";
             } else {
-                return "<h3 style='color: red;'>❌ Código inválido. Verifica e intenta nuevamente.</h3>
-                        <a href='javascript:history.back()'>Volver</a>";
+                $_SESSION['mensaje_visita'] = "❌ Código inválido. Verifica e intenta nuevamente.";
             }
+            header("Location: /validar_visitas.php");
+            exit();
         } else {
-            return "<h4 style='color: red;'>Acceso no permitido.</h4>";
+            $_SESSION['mensaje_visita'] = "Acceso no permitido.";
+            header("Location: /validar_visitas.php");
+            exit();
         }
+    }
+
+    public function index() {
+        $sql = "SELECT * FROM visitas WHERE id_estado = 1";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

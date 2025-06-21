@@ -1,9 +1,16 @@
 <?php
  
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../src/Controllers/ZonaController.php';
+require_once __DIR__ . '/../src/Controllers/PersonaController.php';
+require_once __DIR__ . '/../src/Config/permissions.php';
  
-$controller = new zonaController();
+session_start();
+if (!tienePermiso('registro_zona')) {
+    header('Location: dashboard.php');
+    exit;
+}
+ 
+$controller = new PersonaController();
 $mensaje = $controller->registrar();
  
 $titulo = 'Registro de zona';
