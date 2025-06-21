@@ -2,6 +2,13 @@
  
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/Controllers/TerrenoController.php';
+require_once __DIR__ . '/../src/Config/permissions.php';
+ 
+session_start();
+if (!tienePermiso('registro_terreno')) {
+    header('Location: dashboard.php');
+    exit;
+}
  
 $controller = new terrenoController();
 $mensaje = $controller->registrar();

@@ -43,11 +43,13 @@ require_once __DIR__ . '/../../src/Config/permissions.php';
                         Registro de zona
                     </a>
                 <?php endif; ?>
-                <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro_terreno' ? 'active' : ''; ?>"
-                    href="/registro_terreno.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
-                    Registro de Terreno
-                </a>
+                <?php if (tienePermiso('registro_terreno')): ?>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
+                        href="/registro_terreno.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
+                        Registro de Terreno
+                    </a>
+                <?php endif; ?>
                 <a class="nav-link <?php echo ($pagina_actual ?? '') === 'historial_visitas' ? 'active' : ''; ?>"
                     href="/historial_visitas.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
