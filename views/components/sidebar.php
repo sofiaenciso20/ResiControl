@@ -50,11 +50,13 @@ require_once __DIR__ . '/../../src/Config/permissions.php';
                         Registro de Terreno
                     </a>
                 <?php endif; ?>
-                <a class="nav-link <?php echo ($pagina_actual ?? '') === 'historial_visitas' ? 'active' : ''; ?>"
-                    href="/historial_visitas.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
-                    Historial de Visitas
-                </a>
+                <?php if (tienePermiso('historial_visitas')): ?>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
+                        href="/historial_visitas.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
+                        Historial de Visitas
+                    </a>
+                <?php endif; ?>
                 <a class="nav-link <?php echo ($pagina_actual ?? '') === 'gestion_reservas' ? 'active' : ''; ?>"
                     href="/gestion_reservas.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
