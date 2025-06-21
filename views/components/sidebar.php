@@ -62,11 +62,13 @@ require_once __DIR__ . '/../../src/Config/permissions.php';
                     <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
                     Gestion de Reservas
                 </a>
-                <a class="nav-link <?php echo ($pagina_actual ?? '') === 'gestion_residentes' ? 'active' : ''; ?>"
-                    href="/gestion_residentes.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
-                    Gestion de Residentes
-                </a>
+                <?php if (tienePermiso('gestion_residentes')): ?>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
+                        href="/gestion_residentes.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
+                        Gestion de Residentes
+                    </a>
+                <?php endif; ?>
                 <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro_paquete' ? 'active' : ''; ?>"
                     href="/registro_paquete.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
@@ -87,11 +89,13 @@ require_once __DIR__ . '/../../src/Config/permissions.php';
                     <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
                     Registro de Reservas
                 </a>
-                <a class="nav-link <?php echo ($pagina_actual ?? '') === 'gestion_roles' ? 'active' : ''; ?>"
-                    href="/gestion_roles.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
-                    Gestion de Roles
-                </a>
+                <?php if (tienePermiso('gestion_roles')): ?>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
+                        href="/gestion_roless.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
+                        Gestion de Roles
+                    </a>
+                <?php endif; ?>
             </div>
 
         </div>

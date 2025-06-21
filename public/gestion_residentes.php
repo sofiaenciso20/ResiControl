@@ -2,6 +2,13 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/Controllers/ResidentesController.php';
+require_once __DIR__ . '/../src/Config/permissions.php';
+ 
+session_start();
+if (!tienePermiso('gestion_residentes')) {
+    header('Location: dashboard.php');
+    exit;
+}
 
 $controller = new ResidentesController();
 $visitas = $controller->index(); // Cambiado aquí

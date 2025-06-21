@@ -31,6 +31,7 @@ $role_permissions = [
 ];
  
 // Función para verificar permisos
+//la pagina que necesitamos acceder
 function tienePermiso($pagina) {
     if (!isset($_SESSION['user'])) return false;
     $rol = $_SESSION['user']['role'];
