@@ -71,26 +71,34 @@ require_once __DIR__ . '/../../src/Config/permissions.php';
                         Gestion de Residentes
                     </a>
                 <?php endif; ?>
-                <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro_paquete' ? 'active' : ''; ?>"
-                    href="/registro_paquete.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
-                    Registro de Paquete
-                </a>
-                <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro_visitas' ? 'active' : ''; ?>"
-                    href="/registro_visita.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
-                    Registro de Visitas
-                </a>
-                <a class="nav-link <?php echo ($pagina_actual ?? '') === 'validar_visitas' ? 'active' : ''; ?>"
-                    href="/validar_visitas.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
-                    Validar Visitas
-                </a>
-                <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro_reservas' ? 'active' : ''; ?>"
-                    href="/registro_reserva.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
-                    Registro de Reservas
-                </a>
+                <?php if (tienePermiso('registro_paquete')): ?>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
+                        href="/registro_paquete.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
+                        Registro de Paquete
+                    </a>
+                <?php endif; ?>
+                <?php if (tienePermiso('registro_visitas')): ?>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
+                        href="/registro_visitas.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
+                        Registro de Visitas
+                    </a>
+                <?php endif; ?>
+                <?php if (tienePermiso('validar_visitas')): ?>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
+                        href="/validar_visitas.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
+                        Validar Visitas
+                    </a>
+                <?php endif; ?>
+                <?php if (tienePermiso('registro_reservas')): ?>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
+                        href="/registro_reservas.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
+                        Registro de Reservas
+                    </a>
+                <?php endif; ?>
                 <?php if (tienePermiso('gestion_roles')): ?>
                     <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
                         href="/gestion_roless.php">

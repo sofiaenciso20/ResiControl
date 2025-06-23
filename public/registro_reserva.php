@@ -2,6 +2,13 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/Controllers/RegistroReservaController.php';
+require_once __DIR__ . '/../src/Config/permissions.php';
+ 
+session_start();
+if (!tienePermiso('registro_reserva')) {
+    header('Location: dashboard.php');
+    exit;
+}
 
 $controller = new RegistroReservaController();
 $visitas = $controller->index(); // Cambiado aquí

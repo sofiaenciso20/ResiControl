@@ -20,10 +20,14 @@ $role_permissions = [
         'gestion_reservas'
     ],
     3 => [
+        'validar_visitas',
+        'registro_reserva',
         'registro_visita',
+        'registro_persona',
         'registro_reserva'
     ],
     4 => [
+        'historial_visitas',
         'gestion_reservas',
         'gestion_residentes',
         'registro_paquete'
