@@ -101,11 +101,16 @@ require_once __DIR__ . '/../../src/Config/permissions.php';
                 <?php endif; ?>
                 <?php if (tienePermiso('gestion_roles')): ?>
                     <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
-                        href="/gestion_roless.php">
+                        href="/gestion_roles.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
                         Gestion de Roles
                     </a>
                 <?php endif; ?>
+                 <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
+                        href="/historial_paquetes.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
+                        Historial de Paquetes
+                    </a>
             </div>
 
         </div>

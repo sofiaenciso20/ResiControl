@@ -1,11 +1,3 @@
-<?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-$mensaje = $_SESSION['mensaje'] ?? null;
-unset($_SESSION['mensaje']);
-?>
-
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-md-8">

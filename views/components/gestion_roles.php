@@ -1,30 +1,17 @@
-<?php
-session_start();
-require_once __DIR__ . '/../../src/config/Database.php';
-use App\Config\Database;
-
-$db = new Database();
-$conn = $db->getConnection();
-
-// Traer todos los usuarios y sus roles
-$query = "SELECT u.documento, u.nombre, u.apellido, u.correo, r.rol, u.id_rol 
-          FROM usuarios u
-          JOIN roles r ON u.id_rol = r.id_rol";
-$stmt = $conn->prepare($query);
-$stmt->execute();
-$usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
-?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <title>Gestión de Roles</title>
-  
 </head>
 <body class="container mt-5">
   <h3 class="mb-4">Gestión de Roles de Usuarios</h3>
-
+<?php if (!empty($mensaje_exito)): ?>
+    <div class="alert alert-success" role="alert">
+      <?= htmlspecialchars($mensaje_exito) ?>
+    </div>
+  <?php endif; ?>
+  <?php $rol_usuario_logueado = $_SESSION['user']['role']; ?>
   <table class="table table-bordered">
     <thead>
       <tr>
@@ -43,16 +30,25 @@ $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <td><?= htmlspecialchars($user['correo']) ?></td>
           <td><?= htmlspecialchars($user['rol']) ?></td>
           <td>
-            <form method="POST" action="/gestion_roles.php" class="d-flex">
-              <input type="hidden" name="documento" value="<?= $user['documento'] ?>">
-              <select name="id_rol" class="form-select me-2" required>
-                <option value="">Seleccione</option>
-                <option value="2">Administrador</option>
-                <option value="3">Residente</option>
-                <option value="4">Vigilante</option>
-              </select>
-              <button type="submit" class="btn btn-primary btn-sm">Cambiar</button>
-            </form>
+           <?php if ($rol_usuario_logueado == 1 || $rol_usuario_logueado == 2): ?>
+              <form method="POST" action="/gestion_roles.php" class="d-flex">
+                <input type="hidden" name="documento" value="<?= $user['documento'] ?>">
+                <select name="id_rol" class="form-select me-2" required>
+                  <option value="">Seleccione</option>
+                  <?php foreach ($roles as $rol): ?>
+                    <?php
+                    // Si es Administrador, solo puede ver Residente (3) y Vigilante (4)
+                    if ($rol_usuario_logueado == 2 && !in_array($rol['id_rol'], [3, 4])) continue;
+                    // Si es Super Admin, puede ver todos los roles
+                    ?>
+                    <option value="<?= $rol['id_rol'] ?>"><?= htmlspecialchars($rol['rol']) ?></option>
+                  <?php endforeach; ?>
+                </select>
+                <button type="submit" class="btn btn-primary btn-sm">Cambiar</button>
+              </form>
+            <?php else: ?>
+              <span class="text-muted">Sin permisos</span>
+            <?php endif; ?>
           </td>
         </tr>
       <?php endforeach; ?>

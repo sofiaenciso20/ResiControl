@@ -1,27 +1,3 @@
-<?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-require_once __DIR__ . '/../../src/config/Database.php';
-use App\Config\Database;
-
-$db = new Database();
-$conn = $db->getConnection();
-
-// Cargar residentes
-$sql = "SELECT documento, CONCAT(nombre, ' ', apellido) AS nombre_completo 
-        FROM usuarios 
-        WHERE id_rol = 3 AND id_estado = 1";
-$residentes = $conn->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
-// Cargar motivos
-$sqlMotivos = "SELECT id_mot_visi, motivo_visita FROM motivo_visita";
-$motivos = $conn->query($sqlMotivos)->fetchAll(PDO::FETCH_ASSOC);
-
-$mensaje = $_SESSION['mensaje_visita'] ?? null;
-unset($_SESSION['mensaje_visita']);
-?>
-
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-md-8">

@@ -3,7 +3,8 @@
     "description": "Proyecto de pruebas en PHP puro",
     "type": "project",
     "require": {
-        "php": ">=7.4"
+        "php": ">=7.4",
+        "phpmailer/phpmailer": "^6.10"
     },
     "authors": [
         {

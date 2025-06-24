@@ -3,13 +3,11 @@ session_start();
 require_once __DIR__ . '/../config/Database.php';
 use App\Config\Database;
 
-// Elimina la validación de rol para permitir que cualquiera pueda cambiar roles
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $documento = $_POST['documento'];
     $nuevo_rol = $_POST['id_rol'];
 
-    // Validar rol válido (solo del 2 al 4, no permitir cambiar a Super Admin)
+    // Validar rol válido (2: Admin, 3: Residente, 4: Vigilante)
     if (in_array($nuevo_rol, ['2', '3', '4'])) {
         $db = new Database();
         $conn = $db->getConnection();
@@ -22,6 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// Redireccionar nuevamente a la vista principal
 header("Location: ../gestion_roles.php");
 exit();
-?>
