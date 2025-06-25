@@ -106,11 +106,13 @@ require_once __DIR__ . '/../../src/Config/permissions.php';
                         Gestion de Roles
                     </a>
                 <?php endif; ?>
+                <?php if (tienePermiso('historial_paquetes')): ?>
                  <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
                         href="/historial_paquetes.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
                         Historial de Paquetes
                     </a>
+                <?php endif; ?>
             </div>
 
         </div>

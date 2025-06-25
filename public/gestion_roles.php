@@ -10,41 +10,50 @@ if (!tienePermiso('gestion_roles')) {
     exit;
 }
 
-// Procesar cambio de rol (POST)
+// Procesamiento del formulario POST (cambio de rol)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['documento'], $_POST['id_rol'])) {
+    // Obtiene los datos enviados: documento del usuario y nuevo rol
     $documento = $_POST['documento'];
     $id_rol = $_POST['id_rol'];
- 
+
+    // Se conecta a la base de datos usando la clase personalizada Database
     require_once __DIR__ . '/../src/Config/database.php';
     $db = new \App\Config\Database();
     $conn = $db->getConnection();
- 
+
+    // Ejecuta la consulta SQL para actualizar el rol del usuario correspondiente
+    // Actualiza la columna id_rol en la tabla usuarios
+    // solo en el registro donde el documento coincida.
     $stmt = $conn->prepare("UPDATE usuarios SET id_rol = ? WHERE documento = ?");
     $stmt->execute([$id_rol, $documento]);
-    // Guardar mensaje de éxito en la sesión
+
+    // Guarda un mensaje de éxito en la sesión para mostrarlo después en la vista
     $_SESSION['mensaje_exito'] = 'Rol actualizado correctamente.';
-    // Redirigir para evitar reenvío del formulario y mostrar la tabla actualizada
+
+    // Redirige para evitar el doble envío del formulario y recargar la tabla actualizada
     header('Location: gestion_roles.php');
     exit;
 }
 
-// Consulta de usuarios y roles para mostrar en la vista
+//Consulta para mostrar los usuarios y sus roles
 require_once __DIR__ . '/../src/Config/database.php';
 $db = new \App\Config\Database();
 $conn = $db->getConnection();
- 
+
+// Consulta la información de todos los usuarios y su rol actual, uniendo usuarios con roles
 $query = "SELECT u.documento, u.nombre, u.apellido, u.correo, r.rol, u.id_rol
           FROM usuarios u
           JOIN roles r ON u.id_rol = r.id_rol";
 $stmt = $conn->prepare($query);
 $stmt->execute();
+//Obtiene todos los resultados que devolvió la consulta.
 $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Consulta todos los roles para el select
+// Consulta todos los roles para mostrar en el <select>
 $stmtRoles = $conn->query("SELECT id_rol, rol FROM roles");
 $roles = $stmtRoles->fetchAll(PDO::FETCH_ASSOC);
 
-// Obtener y limpiar mensaje de éxito
+// Mostrar mensaje de éxito si existe
 $mensaje_exito = '';
 if (isset($_SESSION['mensaje_exito'])) {
     $mensaje_exito = $_SESSION['mensaje_exito'];

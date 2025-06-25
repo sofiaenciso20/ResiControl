@@ -6,10 +6,15 @@
 </head>
 <body class="container mt-5">
   <h3 class="mb-4">Gestión de Roles de Usuarios</h3>
+  <!-- Verifica si existe la variable $mensaje y si contiene algo.
+              Si, muestra una alerta con el contenido.
+              Se usa htmlspecialchars para evitar problemas si el mensaje incluye caracteres especiales.-->
 <?php if (!empty($mensaje_exito)): ?>
     <div class="alert alert-success" role="alert">
       <?= htmlspecialchars($mensaje_exito) ?>
     </div>
+   <!-- Guarda en una variable el rol del usuario actual 
+        Esto se usa para decidir qué acciones puede hacer el usuario en esta vista.-->
   <?php endif; ?>
   <?php $rol_usuario_logueado = $_SESSION['user']['role']; ?>
   <table class="table table-bordered">

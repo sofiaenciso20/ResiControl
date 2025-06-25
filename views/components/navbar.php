@@ -1,6 +1,6 @@
 
 <?php if (session_status() === PHP_SESSION_NONE) { session_start(); } ?>
-<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+<nav class="sb-topnav navbar navbar-expand navbar-dark bg-primary">
     <!-- Navbar Brand-->
     <a class="navbar-brand ps-3" href="index.php">
         <img src="/assets/img/logo.png" alt="Logo ResiControl" class="navbar-logo">

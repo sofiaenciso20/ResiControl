@@ -21,7 +21,9 @@
                 
                 <button type="submit" class="btn btn-login">Enviar enlace</button>
             </form>
-
+            <!-- Verifica si existe la variable $mensaje y si contiene algo.
+              Si, muestra una alerta (tipo info) con el contenido.
+              Se usa htmlspecialchars para evitar problemas si el mensaje incluye caracteres especiales.-->
             <?php if (isset($mensaje)): ?>
                 <div class="alert alert-info mt-3">
                     <?= $mensaje ?>

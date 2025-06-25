@@ -2274,8 +2274,8 @@ body.body-contact {
   /* Estilos background */
   
   .bg-primary {
-    --bs-bg-opacity: 1;
-    background-color: rgba(var(--bs-primary-rgb), var(--bs-bg-opacity)) !important;
+
+    background-color: #17155f!important;
   }
   
   .bg-secondary {
@@ -2309,10 +2309,9 @@ body.body-contact {
   }
   
   .bg-dark {
-    --bs-bg-opacity: 1;
-    background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity)) !important;
+    background-color: #17155f !important;
   }
-  
+
   .bg-black {
     --bs-bg-opacity: 1;
     background-color: rgba(var(--bs-black-rgb), var(--bs-bg-opacity)) !important;
@@ -2678,8 +2677,9 @@ body.body-contact {
     flex-shrink: 0;
   }
   
+  
   .sb-sidenav-dark {
-    background-color: #212529;
+    background-color: #17155f;
     color: rgba(255, 255, 255, 0.5);
   }
   .sb-sidenav-dark .sb-sidenav-menu .sb-sidenav-menu-heading {

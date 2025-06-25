@@ -1,6 +1,13 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/config/Database.php';
+require_once __DIR__ . '/../src/Config/permissions.php';
+ 
+session_start();
+if (!tienePermiso('historial_paquetes')) {
+    header('Location: dashboard.php');
+    exit;
+}
 
 use App\Config\Database;
 

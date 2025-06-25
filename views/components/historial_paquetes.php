@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Historial de Paquetes</title>
-    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
     <h2>Historial de Paquetes Registrados</h2>
@@ -17,6 +16,7 @@
                 <th>Recepción</th>
                 <th>Entrega</th>
                 <th>Estado</th>
+                <th>Accion</th>
             </tr>
         </thead>
         <tbody>
@@ -29,6 +29,12 @@
                     <td><?= $p['fech_hor_recep'] ?></td>
                     <td><?= $p['fech_hor_entre'] ?? 'Pendiente' ?></td>
                     <td><?= $p['estado'] ?></td>
+                    <td>
+                        <form method="GET" action="/detalle_paquete.php" style="display:inline;">
+                            <input type="hidden" name="id_paquete" value="<?= $p['id_paquete'] ?>">
+                            <button type="submit" class="btn btn-info btn-sm">Ver Detalle</button>
+                        </form>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

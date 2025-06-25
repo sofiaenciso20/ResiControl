@@ -30,6 +30,7 @@ $role_permissions = [
         'historial_visitas',
         'gestion_reservas',
         'gestion_residentes',
+        'historial_paquetes',
         'registro_paquete'
     ]
 ];
