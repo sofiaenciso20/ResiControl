@@ -1,70 +1,24 @@
 <?php
-// ResidentesController.php
+// src/Controllers/ResidentesController.php
+
+require_once __DIR__ . '/../config/Database.php';
+use App\Config\Database;
 
 class ResidentesController {
-    private $residentes = [];
+    private $conn;
 
     public function __construct() {
-        // Datos de ejemplo (puedes modificarlos o agregar más)
-        $this->residentes = [
-            [
-                'id' => 101,
-                'nombre' => 'Sofía Enciso',
-                'contacto' => '3022927343',
-                'casa' => 'C - 3'
-            ],
-            [
-                'id' => 102,
-                'nombre' => 'Paula García',
-                'contacto' => '3016849918',
-                'casa' => 'A - 5'
-            ],
-            [
-                'id' => 103,
-                'nombre' => 'Nicolás Mora',
-                'contacto' => '3177650234',
-                'casa' => 'G - 4'
-            ]
-        ];
+        $db = new Database();
+        $this->conn = $db->getConnection();
     }
 
     public function index() {
-        return $this->residentes;
-    }
+        $query = "SELECT documento, CONCAT(nombre, ' ', apellido) AS nombre, telefono, direccion_casa
+                  FROM usuarios 
+                  WHERE id_rol = 3"; // solo residentes
 
-    public function show($id) {
-        foreach ($this->residentes as $residente) {
-            if ($residente['id'] == $id) {
-                return $residente;
-            }
-        }
-        return null;
-    }
-
-    public function store($data) {
-        $nuevo_id = end($this->residentes)['id'] + 1;
-        $data['id'] = $nuevo_id;
-        $this->residentes[] = $data;
-        return $data;
-    }
-
-    public function update($id, $data) {
-        foreach ($this->residentes as &$residente) {
-            if ($residente['id'] == $id) {
-                $residente = array_merge($residente, $data);
-                return $residente;
-            }
-        }
-        return null;
-    }
-
-    public function delete($id) {
-        foreach ($this->residentes as $i => $residente) {
-            if ($residente['id'] == $id) {
-                unset($this->residentes[$i]);
-                return true;
-            }
-        }
-        return false;
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

@@ -1,9 +1,8 @@
 <?php
-
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/Controllers/VisitasController.php';
 require_once __DIR__ . '/../src/Config/permissions.php';
- 
+
 session_start();
 if (!tienePermiso('historial_visitas')) {
     header('Location: dashboard.php');
@@ -11,7 +10,7 @@ if (!tienePermiso('historial_visitas')) {
 }
 
 $controller = new VisitasController();
-$visitas = $controller->index(); // Cambiado aquí
+$visitas = $controller->index();
 
 $titulo = 'Historial de Visitas';
 $pagina_actual = 'historial_visitas';

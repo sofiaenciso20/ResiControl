@@ -1,66 +1,25 @@
 <?php
-// ReservasController.php
+require_once __DIR__ . '/../config/Database.php';
+use App\Config\Database;
 
 class ReservasController {
-    private $reservas = [];
+    private $conn;
 
     public function __construct() {
-        // Datos simulados (puedes quitarlos o modificarlos)
-        $this->reservas = [
-            [
-                'id' => 1,
-                'zona' => 'BBQ',
-                'fecha' => '2025-06-05',
-                'horario' => '6:00 pm a 8:00 pm',
-                'residente' => 'Sofía Enciso'
-            ],
-            [
-                'id' => 2,
-                'zona' => 'Salón Comunal',
-                'fecha' => '2025-06-07',
-                'horario' => '8:00 am a 10:00 am',
-                'residente' => 'Paula García'
-            ]
-        ];
+        $db = new Database();
+        $this->conn = $db->getConnection();
     }
 
     public function index() {
-        return $this->reservas;
-    }
+        $sql = "SELECT r.id_reservas, z.nombre_zona AS zona, r.fecha, h.horario, 
+                       CONCAT(u.nombre, ' ', u.apellido) AS residente
+                FROM reservas r
+                INNER JOIN zonas_comunes z ON r.id_zonas_comu = z.id_zonas_comu
+                INNER JOIN horario h ON r.id_horario = h.id_horario
+                INNER JOIN usuarios u ON r.id_usuarios = u.documento
+                ORDER BY r.fecha DESC";
 
-    public function show($id) {
-        foreach ($this->reservas as $reserva) {
-            if ($reserva['id'] == $id) {
-                return $reserva;
-            }
-        }
-        return null;
-    }
-
-    public function store($data) {
-        $nuevo_id = count($this->reservas) + 1;
-        $data['id'] = $nuevo_id;
-        $this->reservas[] = $data;
-        return $data;
-    }
-
-    public function update($id, $data) {
-        foreach ($this->reservas as &$reserva) {
-            if ($reserva['id'] == $id) {
-                $reserva = array_merge($reserva, $data);
-                return $reserva;
-            }
-        }
-        return null;
-    }
-
-    public function delete($id) {
-        foreach ($this->reservas as $index => $reserva) {
-            if ($reserva['id'] == $id) {
-                unset($this->reservas[$index]);
-                return true;
-            }
-        }
-        return false;
+        $stmt = $this->conn->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

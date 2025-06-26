@@ -36,8 +36,8 @@ unset($_SESSION['mensaje_visita']);
 $controller = new RegistroVisitasController();
 $visitas = $controller->index();
 
-$titulo = 'Registro de Visitas';
-$pagina_actual = 'registro_visitas';
+$titulo = 'Registro de Visita';
+$pagina_actual = 'registro_visita';
 
 ob_start();
 require_once __DIR__ . '/../views/components/registro_visita.php';

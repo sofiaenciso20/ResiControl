@@ -1,9 +1,8 @@
 <?php
-
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/Controllers/ReservasController.php';
 require_once __DIR__ . '/../src/Config/permissions.php';
- 
+
 session_start();
 if (!tienePermiso('gestion_reservas')) {
     header('Location: dashboard.php');
@@ -11,9 +10,9 @@ if (!tienePermiso('gestion_reservas')) {
 }
 
 $controller = new ReservasController();
-$visitas = $controller->index(); // Cambiado aquí
+$reservas = $controller->index(); // ← nombre corregido
 
-$titulo = 'Gestion de reservas';
+$titulo = 'Gestión de Reservas';
 $pagina_actual = 'gestion_reservas';
 
 ob_start();

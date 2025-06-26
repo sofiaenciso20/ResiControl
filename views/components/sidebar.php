@@ -4,26 +4,31 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once __DIR__ . '/../../src/Config/permissions.php';
+
+// Variable para saber si hay usuario logueado
+$usuario_logueado = !empty($_SESSION['is_logged_in']) && !empty($_SESSION['user']);
 ?>
 <div id="layoutSidenav_nav">
     <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
         <div class="sb-sidenav-menu">
             <div class="nav">
-                <div class="sb-sidenav-menu-heading">Core</div>
-                <a class="nav-link <?php echo ($pagina_actual ?? '') === 'inicio' ? 'active' : ''; ?>" href="index.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                    Inicio
-                </a>
-                <a class="nav-link <?php echo ($pagina_actual ?? '') === 'Sobre Nosotros' ? 'active' : ''; ?>"
-                    href="sobre_nosotros.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                    Sobre Nosotros
-                </a>
-                <a class="nav-link <?php echo ($pagina_actual ?? '') === 'contactanos' ? 'active' : ''; ?>"
-                    href="contactanos.php">
-                    <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                    contactanos
-                </a>
+                <div class="sb-sidenav-menu-heading"></div>
+                <?php if (!$usuario_logueado): ?>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'inicio' ? 'active' : ''; ?>" href="index.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        Inicio
+                    </a>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'Sobre Nosotros' ? 'active' : ''; ?>"
+                        href="sobre_nosotros.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        Sobre Nosotros
+                    </a>
+                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'contactanos' ? 'active' : ''; ?>"
+                        href="contactanos.php">
+                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        contactanos
+                    </a>
+                <?php endif; ?>
                 <a class="nav-link <?php echo ($pagina_actual ?? '') === 'dashboard' ? 'active' : ''; ?>"
                     href="/dashboard.php">
                     <div class="sb-nav-link-icon"><i class="fas fa-building"></i></div>
@@ -114,11 +119,10 @@ require_once __DIR__ . '/../../src/Config/permissions.php';
                     </a>
                 <?php endif; ?>
             </div>
-
         </div>
         <div class="sb-sidenav-footer">
             <div class="small">Estado:</div>
-            <?php echo (!empty($_SESSION['is_logged_in']) && !empty($_SESSION['user'])) ? htmlspecialchars($_SESSION['user']['name']) : 'No hay sesión activa'; ?>
+            <?php echo $usuario_logueado ? htmlspecialchars($_SESSION['user']['name']) : 'No hay sesión activa'; ?>
         </div>
     </nav>
 </div>

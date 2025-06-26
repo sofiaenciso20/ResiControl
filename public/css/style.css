@@ -469,7 +469,7 @@ body.body-contact {
 
 /* NAVBAR */
 .navbar-logo {
-    height: 40px;  /* Ajusta este valor según lo que necesites */
+    height: 55px;  /* Ajusta este valor según lo que necesites */
     width: auto;   /* Mantiene la proporción del logo */
 }
 
@@ -978,7 +978,7 @@ body.body-contact {
   }
   
   .navbar-dark {
-    --bs-navbar-color: rgba(255, 255, 255, 0.55);
+    --bs-navbar-color: rgb(255, 255, 255);
     --bs-navbar-hover-color: rgba(255, 255, 255, 0.75);
     --bs-navbar-disabled-color: rgba(255, 255, 255, 0.25);
     --bs-navbar-active-color: #fff;
@@ -2625,7 +2625,7 @@ body.body-contact {
     margin: 0;
   }
   .sb-topnav.navbar-dark #sidebarToggle {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgb(255, 255, 255);
   }
   .sb-topnav.navbar-light #sidebarToggle {
     color: #212529;
@@ -2680,19 +2680,19 @@ body.body-contact {
   
   .sb-sidenav-dark {
     background-color: #17155f;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgb(255, 255, 255);
   }
   .sb-sidenav-dark .sb-sidenav-menu .sb-sidenav-menu-heading {
     color: rgba(255, 255, 255, 0.25);
   }
   .sb-sidenav-dark .sb-sidenav-menu .nav-link {
-    color: rgba(255, 255, 255, 0.5);
+    color: rgb(255, 255, 255);
   }
   .sb-sidenav-dark .sb-sidenav-menu .nav-link .sb-nav-link-icon {
-    color: rgba(255, 255, 255, 0.25);
+    color: rgb(255, 255, 255);
   }
   .sb-sidenav-dark .sb-sidenav-menu .nav-link .sb-sidenav-collapse-arrow {
-    color: rgba(255, 255, 255, 0.25);
+    color: rgb(255, 255, 255);
   }
   .sb-sidenav-dark .sb-sidenav-menu .nav-link:hover {
     color: #fff;
@@ -2704,7 +2704,7 @@ body.body-contact {
     color: #fff;
   }
   .sb-sidenav-dark .sb-sidenav-footer {
-    background-color: #343a40;
+    background-color: #424096;
   }
   
   .sb-sidenav-light {
