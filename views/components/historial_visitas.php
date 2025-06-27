@@ -17,6 +17,7 @@
               <th>Casa</th>
               <th>Motivo</th>
               <th>Hora</th>
+              <th>Confirmada</th>
               <th>Acción</th>
             </tr>
           </thead>
@@ -30,15 +31,35 @@
                 <td><?= htmlspecialchars($visita['motivo_visita']) ?></td>
                 <td><?= date('g:i a', strtotime($visita['hora_ingreso'])) ?></td>
                 <td>
+                  <?php if (isset($visita['id_estado'])): ?>
+                    <?php if ($visita['id_estado'] == 1): ?>
+                      <span class="badge bg-warning text-dark">Pendiente</span>
+                    <?php elseif ($visita['id_estado'] == 2): ?>
+                      <span class="badge bg-success">Aprobada</span>
+                    <?php else: ?>
+                      <span class="badge bg-secondary">Desconocido</span>
+                    <?php endif; ?>
+                  <?php else: ?>
+                    <span class="badge bg-secondary">Desconocido</span>
+                  <?php endif; ?>
+                </td>
+                <td>
                   <div class="d-flex justify-content-center gap-2">
                     <a href="detalle_visita.php?id=<?= $visita['id_visita'] ?>" class="btn btn-sm btn-outline-secondary" title="Ver"><i class="bi bi-eye"></i></a>
-                    <a href="eliminar_visita.php?id=<?= $visita['id_visita'] ?>" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar esta visita?');"><i class="bi bi-x-lg"></i></a>
+                    <?php if (isset($visita['id_estado']) && $visita['id_estado'] == 1): ?>
+                      <form method="POST" action="confirmar_visitas.php" class="d-inline">
+                        <input type="hidden" name="id_visita" value="<?= $visita['id_visita'] ?>">
+                        <button type="submit" class="btn btn-sm btn-success" title="Confirmar llegada">
+                          <i class="bi bi-check-circle"></i> 
+                        </button>
+                      </form>
+                    <?php endif; ?>
                   </div>
                 </td>
               </tr>
             <?php endforeach; ?>
             <?php if (empty($visitas)): ?>
-              <tr><td colspan="7" class="text-muted">No hay visitas registradas.</td></tr>
+              <tr><td colspan="8" class="text-muted">No hay visitas registradas.</td></tr>
             <?php endif; ?>
           </tbody>
         </table>
@@ -46,3 +67,5 @@
     </div>
   </div>
 </div>
+ 
+ 

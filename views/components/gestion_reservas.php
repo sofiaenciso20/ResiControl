@@ -29,11 +29,8 @@
                     <td><?= htmlspecialchars($reserva['residente']) ?></td>
                     <td>
                       <div class="d-flex justify-content-center gap-2">
-                        <a href="ver_reserva.php?id=<?= $reserva['id_reservas'] ?>" class="btn btn-sm btn-outline-secondary" title="Ver">
+                        <a href="detalle_reserva.php?id=<?= $reserva['id_reservas'] ?>" class="btn btn-sm btn-outline-secondary" title="Ver">
                           <i class="bi bi-eye"></i>
-                        </a>
-                        <a href="editar_reserva.php?id=<?= $reserva['id_reservas'] ?>" class="btn btn-sm btn-outline-primary" title="Editar">
-                          <i class="bi bi-pencil"></i>
                         </a>
                         <a href="eliminar_reserva.php?id=<?= $reserva['id_reservas'] ?>" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar esta reserva?');">
                           <i class="bi bi-x-lg"></i>
