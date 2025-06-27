@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
         // Inicio de sesión exitoso
         $_SESSION['is_logged_in'] = true;
         $_SESSION['user'] = [
+            'documento' => $user['documento'],
             'name' => $user['nombre'],
             'email' => $user['correo'],
             'role' => $user['rol']
