@@ -31,8 +31,7 @@
                 <td><?= date('g:i a', strtotime($visita['hora_ingreso'])) ?></td>
                 <td>
                   <div class="d-flex justify-content-center gap-2">
-                    <a href="ver_visita.php?id=<?= $visita['id_visita'] ?>" class="btn btn-sm btn-outline-secondary" title="Ver"><i class="bi bi-eye"></i></a>
-                    <a href="editar_visita.php?id=<?= $visita['id_visita'] ?>" class="btn btn-sm btn-outline-primary" title="Editar"><i class="bi bi-pencil"></i></a>
+                    <a href="detalle_visita.php?id=<?= $visita['id_visita'] ?>" class="btn btn-sm btn-outline-secondary" title="Ver"><i class="bi bi-eye"></i></a>
                     <a href="eliminar_visita.php?id=<?= $visita['id_visita'] ?>" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar esta visita?');"><i class="bi bi-x-lg"></i></a>
                   </div>
                 </td>

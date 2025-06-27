@@ -73,7 +73,7 @@ $usuario_logueado = !empty($_SESSION['is_logged_in']) && !empty($_SESSION['user'
                     <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
                         href="/gestion_residentes.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
-                        Gestion de Residentes
+                        Gestion de Personas
                     </a>
                 <?php endif; ?>
                 <?php if (tienePermiso('registro_paquete')): ?>
@@ -85,7 +85,7 @@ $usuario_logueado = !empty($_SESSION['is_logged_in']) && !empty($_SESSION['user'
                 <?php endif; ?>
                 <?php if (tienePermiso('registro_visitas')): ?>
                     <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
-                        href="/registro_visitas.php">
+                        href="/registro_visita.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
                         Registro de Visitas
                     </a>
@@ -99,7 +99,7 @@ $usuario_logueado = !empty($_SESSION['is_logged_in']) && !empty($_SESSION['user'
                 <?php endif; ?>
                 <?php if (tienePermiso('registro_reservas')): ?>
                     <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
-                        href="/registro_reservas.php">
+                        href="/registro_reserva.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
                         Registro de Reservas
                     </a>
