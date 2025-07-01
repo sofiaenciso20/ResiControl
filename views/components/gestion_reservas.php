@@ -17,6 +17,7 @@
                   <th>Fecha</th>
                   <th>Horario</th>
                   <th>Residente</th>
+                  <th>Estado</th>
                   <th>Acción</th>
                 </tr>
               </thead>
@@ -28,13 +29,55 @@
                     <td><?= htmlspecialchars($reserva['horario']) ?></td>
                     <td><?= htmlspecialchars($reserva['residente']) ?></td>
                     <td>
+                      <?php
+                        $estadoTexto = '';
+                        $badgeClass = '';
+                        switch($reserva['id_estado']) {
+                          case 1:
+                            $estadoTexto = 'Pendiente';
+                            $badgeClass = 'bg-warning';
+                            break;
+                          case 2:
+                            $estadoTexto = 'Aprobada';
+                            $badgeClass = 'bg-success';
+                            break;
+                          case 3:
+                            $estadoTexto = 'Rechazada';
+                            $badgeClass = 'bg-danger';
+                            break;
+                          default:
+                            $estadoTexto = 'Desconocido';
+                            $badgeClass = 'bg-secondary';
+                        }
+                      ?>
+                      <span class="badge <?= $badgeClass ?>">
+                        <?= $estadoTexto ?>
+                      </span>
+                    </td>
+                    <td>
                       <div class="d-flex justify-content-center gap-2">
                         <a href="detalle_reserva.php?id=<?= $reserva['id_reservas'] ?>" class="btn btn-sm btn-outline-secondary" title="Ver">
                           <i class="bi bi-eye"></i>
                         </a>
-                        <a href="eliminar_reserva.php?id=<?= $reserva['id_reservas'] ?>" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar esta reserva?');">
-                          <i class="bi bi-x-lg"></i>
-                        </a>
+                        <?php if ($reserva['id_estado'] == 1): ?>
+                          <form method="POST" action="aprobar_reserva.php" class="d-inline" style="margin:0">
+                            <input type="hidden" name="id_reserva" value="<?= $reserva['id_reservas'] ?>">
+                            <button type="submit" class="btn btn-sm btn-outline-success" title="Aprobar">
+                              <i class="bi bi-check-lg"></i>
+                            </button>
+                          </form>
+                          <form method="POST" action="rechazar_reserva.php" class="d-inline" style="margin:0">
+                            <input type="hidden" name="id_reserva" value="<?= $reserva['id_reservas'] ?>">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Rechazar">
+                              <i class="bi bi-x-lg"></i>
+                            </button>
+                          </form>
+                        <?php endif; ?>
+                        <?php if ($reserva['id_estado'] != 1): ?>
+                          <a href="eliminar_reserva.php?id=<?= $reserva['id_reservas'] ?>" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar esta reserva?');">
+                            <i class="bi bi-trash"></i>
+                          </a>
+                        <?php endif; ?>
                       </div>
                     </td>
                   </tr>
@@ -47,3 +90,5 @@
     </div> <!-- /.col -->
   </div> <!-- /.row -->
 </div>
+ 
+ 

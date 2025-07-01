@@ -23,8 +23,8 @@ $role_permissions = [
         'validar_visitas',
         'registro_reserva',
         'registro_visita',
-        'registro_persona',
-        'registro_reserva'
+        'registro_persona'
+        
     ],
     4 => [
         'historial_visitas',
