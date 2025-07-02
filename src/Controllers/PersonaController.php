@@ -9,14 +9,14 @@ class PersonaController {
             $conn = $db->getConnection();
 
             // Recoge los datos comunes
-            $tipo_usuario = $_POST['tipo_usuario'];
-            $nombre = $_POST['nombre'];
-            $apellido = $_POST['apellido'];
-            $telefono = $_POST['telefono'];
-            $id_tipo_doc = $_POST['tipo_identificacion'];
-            $documento = $_POST['numero_identificacion'];
-            $correo = $_POST['correo'];
-            $contrasena = password_hash($_POST['contrasena'], PASSWORD_DEFAULT);
+            $tipo_usuario = $_POST['tipo_usuario'] ?? '';
+            $nombre = $_POST['nombre'] ?? '';
+            $apellido = $_POST['apellido'] ?? '';
+            $telefono = $_POST['telefono'] ?? '';
+            $id_tipo_doc = $_POST['tipo_identificacion'] ?? '';
+            $documento = $_POST['numero_identificacion'] ?? '';
+            $correo = $_POST['correo'] ?? '';
+            $contrasena = password_hash($_POST['contrasena'] ?? '', PASSWORD_DEFAULT);
 
             // Mapeo del rol
             switch ($tipo_usuario) {
@@ -48,6 +48,16 @@ class PersonaController {
             // Inicia transacción
             try {
                 $conn->beginTransaction();
+
+                 // Verificar si el documento ya existe
+                $sql_verificar = "SELECT documento FROM usuarios WHERE documento = :documento";
+                $stmt_verificar = $conn->prepare($sql_verificar);
+                $stmt_verificar->bindParam(':documento', $documento);
+                $stmt_verificar->execute();
+ 
+                if ($stmt_verificar->fetch()) {
+                    return "El número de documento " . htmlspecialchars($documento) . " ya está registrado en el sistema.";
+                }
 
                 // Insertar usuario
                 $sql = "INSERT INTO usuarios
