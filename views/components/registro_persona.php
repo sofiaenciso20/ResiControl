@@ -12,9 +12,16 @@
                 <?= htmlspecialchars($mensaje); ?>
               </div>
             <?php endif; ?>
-
+ 
+            <?php
+            // Obtener el rol del usuario logueado
+            $rol_usuario = isset($_SESSION['user']['role']) ? $_SESSION['user']['role'] : null;
+            $es_admin = in_array($rol_usuario, [1, 2]); // Super Admin o Admin
+            ?>
+ 
             <form method="POST" action="/registro_persona.php">
-              <!-- Tipo de Usuario -->
+              <!-- Tipo de Usuario - Solo visible para admin -->
+              <?php if ($es_admin): ?>
               <div class="mb-3">
                 <label class="form-label">Tipo de Usuario</label>
                 <select class="form-select" name="tipo_usuario" id="tipo_usuario" required>
@@ -24,7 +31,10 @@
                   <option value="administrador">Administrador</option>
                 </select>
               </div>
-
+              <?php else: ?>
+                <input type="hidden" name="tipo_usuario" value="habitante">
+              <?php endif; ?>
+ 
               <!-- Comunes -->
               <div class="row">
                 <div class="col-md-6 mb-3">
@@ -61,7 +71,8 @@
                   <input type="password" class="form-control" name="contrasena" required>
                 </div>
               </div>
-
+ 
+              <?php if ($es_admin): ?>
               <!-- Campos Vigilante -->
               <div id="campos_vigilante" style="display: none;">
                 <hr>
@@ -71,7 +82,7 @@
                   <input type="text" class="form-control" name="empresa">
                 </div>
               </div>
-
+ 
               <!-- Campos Habitante -->
               <div id="campos_habitante" style="display: none;">
                 <hr>
@@ -97,7 +108,7 @@
                     <input type="number" class="form-control" name="cantidad_animales">
                   </div>
                 </div>
-
+ 
                 <h6 class="mt-3">Vehículo</h6>
                 <div class="row">
                   <div class="col-md-4 mb-3">
@@ -128,7 +139,7 @@
                   </div>
                 </div>
               </div>
-
+              <?php endif; ?>
               <!-- Campos Administrador -->
               <div id="campos_administrador" style="display: none;">
                 <hr>
@@ -138,7 +149,8 @@
                   <input type="text" class="form-control" name="direccion_residencia">
                 </div>
               </div>
-
+             
+ 
               <div class="text-end">
                 <button type="submit" class="btn btn-success">Registrar</button>
               </div>
@@ -148,7 +160,8 @@
       </div>
     </div>
   </div>
-
+ 
+  <?php if ($es_admin): ?>
   <!-- JS para mostrar/ocultar campos dinámicos -->
   <script>
     document.getElementById('tipo_usuario').addEventListener('change', function() {
@@ -157,8 +170,11 @@
       document.getElementById('campos_habitante').style.display = tipo === 'habitante' ? 'block' : 'none';
       document.getElementById('campos_administrador').style.display = tipo === 'administrador' ? 'block' : 'none';
     });
-
+ 
     document.querySelector('select[name="tiene_animales"]').addEventListener('change', function() {
       document.getElementById('cantidad_animales_div').style.display = this.value === 'si' ? 'block' : 'none';
     });
   </script>
+  <?php endif; ?>
+ 
+ 
