@@ -12,7 +12,6 @@ $role_permissions = [
     1 => ['*'], // Super Admin: acceso total
     2 => [
         'registro_persona',
-        'registro_zona',
         'registro_terreno',
         'historial_visitas',
         'gestion_roles',

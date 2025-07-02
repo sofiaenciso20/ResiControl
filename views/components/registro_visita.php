@@ -36,6 +36,7 @@
                 <div class="invalid-feedback">Documento inválido. Ingrese entre 6 y 10 dígitos numéricos.</div>
               </div>
 
+               <?php if (in_array($_SESSION['user']['role'], [1, 2])): ?>
               <div class="col-md-6 mb-3">
                 <label class="form-label">Residente</label>
                 <select name="id_usuarios" class="form-select" required>
@@ -46,6 +47,10 @@
                 </select>
                 <div class="invalid-feedback">Debe seleccionar un residente.</div>
               </div>
+              <?php else: ?>
+                <input type="hidden" name="id_usuarios" value="<?= htmlspecialchars($_SESSION['user']['documento']) ?>">
+              <?php endif; ?>
+ 
 
               <div class="col-md-6 mb-3">
                 <label class="form-label">Motivo de la Visita</label>

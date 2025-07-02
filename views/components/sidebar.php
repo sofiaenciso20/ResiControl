@@ -41,13 +41,6 @@ $usuario_logueado = !empty($_SESSION['is_logged_in']) && !empty($_SESSION['user'
                         Registro de Persona
                     </a>
                 <?php endif; ?>
-                <?php if (tienePermiso('registro_zona')): ?>
-                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
-                        href="/registro_zona.php">
-                        <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
-                        Registro de zona
-                    </a>
-                <?php endif; ?>
                 <?php if (tienePermiso('registro_terreno')): ?>
                     <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
                         href="/registro_terreno.php">
@@ -83,18 +76,11 @@ $usuario_logueado = !empty($_SESSION['is_logged_in']) && !empty($_SESSION['user'
                         Registro de Paquete
                     </a>
                 <?php endif; ?>
-                <?php if (tienePermiso('registro_visitas')): ?>
+                <?php if (tienePermiso('registro_visita')): ?>
                     <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
                         href="/registro_visita.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
                         Registro de Visitas
-                    </a>
-                <?php endif; ?>
-                <?php if (tienePermiso('validar_visitas')): ?>
-                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
-                        href="/validar_visitas.php">
-                        <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
-                        Validar Visitas
                     </a>
                 <?php endif; ?>
                 <?php if (tienePermiso('registro_reservas')): ?>

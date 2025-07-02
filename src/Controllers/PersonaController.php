@@ -91,29 +91,46 @@ class PersonaController {
                 }
 
                 // Solo si es habitante, registra vehículo
+                 // Solo si es habitante, registra vehículo
                 if ($id_rol == 3) {
                     $id_tipo_vehi = $_POST['id_tipo_vehi'] ?? null;
                     $placa = $_POST['placa'] ?? null;
                     $id_marca = $_POST['id_marca'] ?? null;
-                    $color = $_POST['color'] ?? null;
-
-                    if ($id_tipo_vehi && $placa && $id_marca && $color) {
-                        $sql_vehiculo = "INSERT INTO vehiculos (id_tipo_vehi, id_usuarios, placa, id_marca, color)
-                                         VALUES (:id_tipo_vehi, :id_usuarios, :placa, :id_marca, :color)";
-                        
+ 
+                    if ($id_tipo_vehi && $placa && $id_marca) {
+                        // Verificar que el tipo de vehículo existe
+                        $stmt = $conn->prepare("SELECT id_tipo_vehi FROM tipo_vehiculos WHERE id_tipo_vehi = ?");
+                        $stmt->execute([$id_tipo_vehi]);
+                        if (!$stmt->fetch()) {
+                            $conn->rollBack();
+                            return "Error: El tipo de vehículo seleccionado no existe.";
+                        }
+ 
+                        // Verificar que la marca existe
+                        $stmt = $conn->prepare("SELECT id_marca FROM marca WHERE id_marca = ?");
+                        $stmt->execute([$id_marca]);
+                        if (!$stmt->fetch()) {
+                            $conn->rollBack();
+                            return "Error: La marca seleccionada no existe.";
+                        }
+ 
+                        $sql_vehiculo = "INSERT INTO vehiculos (id_tipo_vehi, id_usuarios, placa, id_marca)
+                                         VALUES (:id_tipo_vehi, :id_usuarios, :placa, :id_marca)";
+                       
                         $stmtVehiculo = $conn->prepare($sql_vehiculo);
                         $stmtVehiculo->bindParam(':id_tipo_vehi', $id_tipo_vehi);
                         $stmtVehiculo->bindParam(':id_usuarios', $documento);
                         $stmtVehiculo->bindParam(':placa', $placa);
                         $stmtVehiculo->bindParam(':id_marca', $id_marca);
-                        $stmtVehiculo->bindParam(':color', $color);
-
+ 
                         if (!$stmtVehiculo->execute()) {
+                            $error = $stmtVehiculo->errorInfo();
                             $conn->rollBack();
-                            return "Error al registrar el vehículo.";
+                            return "Error al registrar el vehículo: " . $error[2];
                         }
                     }
                 }
+ 
 
                 $conn->commit();
                 return "¡Persona registrada exitosamente!";
