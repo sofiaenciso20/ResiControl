@@ -5,15 +5,15 @@
     <title>Detalle de la Reserva</title>
 </head>
 <body class="container mt-5">
-<div class="card">
+<div class="card shadow-lg">
     <div class="card-header bg-primary text-white">
-        <h3>Detalle de Reserva</h3>
+        <h3 class="mb-0">Detalle de Reserva</h3>
     </div>
     <div class="card-body">
         <?php if ($mensaje): ?>
             <div class="alert alert-success"><?= $mensaje ?></div>
         <?php endif; ?>
-
+ 
         <?php if (!$reserva): ?>
             <div class="alert alert-danger">No se encontró la reserva.</div>
         <?php elseif ($modo_edicion): ?>
@@ -47,20 +47,59 @@
                 <a href="detalle_reserva.php?id=<?= urlencode($id) ?>" class="btn btn-secondary">Cancelar</a>
             </form>
         <?php else: ?>
-            <ul class="list-group">
-                <li class="list-group-item"><strong>Zona:</strong> <?= htmlspecialchars($reserva['zona']) ?></li>
-                <li class="list-group-item"><strong>Fecha:</strong> <?= htmlspecialchars($reserva['fecha']) ?></li>
-                <li class="list-group-item"><strong>Horario:</strong> <?= htmlspecialchars($reserva['horario']) ?></li>
-                <li class="list-group-item"><strong>Motivo:</strong> <?= htmlspecialchars($reserva['motivo_zonas']) ?></li>
-                <li class="list-group-item"><strong>Residente:</strong> <?= htmlspecialchars($reserva['nombre_residente'] . ' ' . $reserva['apellido_residente']) ?></li>
-                <li class="list-group-item"><strong>Observaciones:</strong> <?= htmlspecialchars($reserva['observaciones']) ?></li>
-            </ul>
-            <?php if (in_array($_SESSION['user']['role'], [1, 2])): ?>
-                <a href="detalle_reserva.php?id=<?= urlencode($id) ?>&editar=1" class="btn btn-primary mt-3">Editar</a>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Zona:</strong> <?= htmlspecialchars($reserva['nombre_zona']) ?></p>
+                    <p><strong>Fecha:</strong> <?= date('d/m/Y', strtotime($reserva['fecha'])) ?></p>
+                    <p><strong>Horario:</strong> <?= htmlspecialchars($reserva['horario']) ?></p>
+                    <p><strong>Motivo:</strong> <?= htmlspecialchars($reserva['motivo'] ?? 'No especificado') ?></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Residente:</strong> <?= htmlspecialchars($reserva['nombre_residente']) ?></p>
+                    <p><strong>Documento:</strong> <?= htmlspecialchars($reserva['documento_residente']) ?></p>
+                    <p><strong>Teléfono:</strong> <?= htmlspecialchars($reserva['telefono_residente']) ?></p>
+                    <p><strong>Estado:</strong>
+                        <?php
+                        $badgeClass = match($reserva['estado']) {
+                            'Pendiente' => 'bg-warning',
+                            'Aprobada' => 'bg-success',
+                            'Rechazada' => 'bg-danger',
+                            default => 'bg-secondary'
+                        };
+                        ?>
+                        <span class="badge <?= $badgeClass ?>"><?= htmlspecialchars($reserva['estado']) ?></span>
+                    </p>
+                </div>
+            </div>
+ 
+            <?php if ($reserva['estado'] !== 'Pendiente'): ?>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <p><strong>Fecha de Procesamiento:</strong>
+                        <?= $reserva['fecha_apro'] ? date('d/m/Y', strtotime($reserva['fecha_apro'])) : 'No procesada' ?>
+                    </p>
+                    <p><strong>Administrador:</strong>
+                        <?= htmlspecialchars($reserva['nombre_administrador'] ?? 'No asignado') ?>
+                    </p>
+                    <?php if (!empty($reserva['observaciones'])): ?>
+                        <p><strong>Observaciones:</strong></p>
+                        <div class="alert alert-info">
+                            <?= nl2br(htmlspecialchars($reserva['observaciones'])) ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
             <?php endif; ?>
-            <a href="gestion_reservas.php" class="btn btn-outline-primary mt-3">Volver</a>
+ 
+            <div class="mt-4">
+                <a href="gestion_reservas.php" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
         <?php endif; ?>
     </div>
 </div>
 </body>
 </html>
+ 
+ 

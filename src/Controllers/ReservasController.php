@@ -39,13 +39,15 @@ class ReservasController {
             CONCAT(u.nombre, ' ', u.apellido) as nombre_residente,
             u.documento as documento_residente,
             e.estado,
-            CONCAT(a.nombre, ' ', a.apellido) as nombre_administrador
+            CONCAT(a.nombre, ' ', a.apellido) as nombre_administrador,
+            mz.motivo_zonas as motivo
             FROM reservas r
             INNER JOIN zonas_comunes zc ON r.id_zonas_comu = zc.id_zonas_comu
             INNER JOIN horario h ON r.id_horario = h.id_horario
             INNER JOIN usuarios u ON CAST(r.id_usuarios AS CHAR) = u.documento
             INNER JOIN estado e ON r.id_estado = e.id_estado
-            LEFT JOIN usuarios a ON CAST(r.id_administrador AS CHAR) = a.documento";
+            LEFT JOIN usuarios a ON CAST(r.id_administrador AS CHAR) = a.documento
+            LEFT JOIN motivo_zonas mz ON r.id_mot_zonas = mz.id_mot_zonas";
  
         // Filtrar según el rol
         if ($rol == 3) { // Residente
@@ -75,14 +77,14 @@ class ReservasController {
             u.telefono as telefono_residente,
             e.estado,
             CONCAT(a.nombre, ' ', a.apellido) as nombre_administrador,
-            mz.motivo as motivo_zona
+            mz.motivo_zonas as motivo
             FROM reservas r
             INNER JOIN zonas_comunes zc ON r.id_zonas_comu = zc.id_zonas_comu
             INNER JOIN horario h ON r.id_horario = h.id_horario
             INNER JOIN usuarios u ON CAST(r.id_usuarios AS CHAR) = u.documento
             INNER JOIN estado e ON r.id_estado = e.id_estado
-            INNER JOIN motivo_zonas mz ON r.id_mot_zonas = mz.id_mot_zonas
             LEFT JOIN usuarios a ON CAST(r.id_administrador AS CHAR) = a.documento
+            LEFT JOIN motivo_zonas mz ON r.id_mot_zonas = mz.id_mot_zonas
             WHERE r.id_reservas = :id";
  
         $stmt = $this->conn->prepare($query);

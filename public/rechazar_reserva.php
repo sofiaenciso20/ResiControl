@@ -1,29 +1,35 @@
+rechazar_reserva 
+=====================
+ 
 <?php
 // Incluimos el controlador necesario para manejar las reservas
+require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/Controllers/ReservasController.php';
+require_once __DIR__ . '/../src/Config/permissions.php';
  
 // Iniciamos la sesión para acceder a las variables de sesión
 session_start();
  
-// Verificamos la autenticación y los permisos del usuario
-// Solo los administradores pueden rechazar reservas
-if (!isset($_SESSION['user']) || !isset($_SESSION['user']['role']) || $_SESSION['user']['role'] !== 2 && $_SESSION['user']['role'] !== 1) {
-    // Si no es administrador, redirigimos al login
-    header('Location: login.php');
-    exit;
-}
- 
- 
-// Validamos que se haya enviado el ID de la reserva en el formulario
-if (!isset($_POST['id_reserva'])) {
-    // Si no se recibió el ID, guardamos mensaje de error y redirigimos
-    $_SESSION['error'] = 'ID de reserva no proporcionado';
+// Verificar permisos
+if (!tienePermiso('gestion_reservas') || $_SESSION['user']['role'] != 2) {
     header('Location: dashboard.php');
     exit;
 }
  
-// Obtenemos el ID de la reserva del formulario
-$id_reserva = $_POST['id_reserva'];
+// Verificar que se recibió un ID
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    $_SESSION['error'] = "ID de reserva inválido";
+    header('Location: gestion_reservas.php');
+    exit;
+}
+ 
+// Obtener observaciones del prompt
+$observaciones = $_GET['observaciones'] ?? '';
+if (empty($observaciones)) {
+    $_SESSION['error'] = "Debe proporcionar un motivo para el rechazo";
+    header('Location: gestion_reservas.php');
+    exit;
+}
  
 // Creamos una instancia del controlador de reservas
 $controller = new ReservasController();
@@ -31,20 +37,21 @@ $controller = new ReservasController();
 try {
     // Intentamos rechazar la reserva
     // El método rechazarReserva cambia el id_estado a 3 (rechazada)
-    if ($controller->rechazarReserva($id_reserva)) {
+    if ($controller->rechazarReserva($_GET['id'], $observaciones)) {
         // Si la actualización fue exitosa, guardamos mensaje de éxito
         $_SESSION['success'] = 'Reserva rechazada exitosamente';
     } else {
         // Si hubo un error en la actualización, guardamos mensaje de error
-        $_SESSION['error'] = 'Error al rechazar la reserva';
+        $_SESSION['error'] = 'No se pudo rechazar la reserva';
     }
 } catch (Exception $e) {
     // Si ocurre una excepción (error de BD u otro), guardamos mensaje de error
-    $_SESSION['error'] = 'Error al procesar la solicitud';
+    $_SESSION['error'] = $e->getMessage();
 }
  
 // Redirigimos al usuario a la página anterior
 // $_SERVER['HTTP_REFERER'] contiene la URL de la página que hizo la petición
-header('Location: ' . $_SERVER['HTTP_REFERER']);
+header('Location: gestion_reservas.php');
 exit;
+ 
  
