@@ -2,9 +2,11 @@
   <div class="card shadow-lg flex-grow-1">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
       <h3 class="mb-0">Historial de Visitas</h3>
+      <?php if (in_array($_SESSION['user']['role'], [1, 2, 4])): ?>
       <a href="exportar_excel.php" title="Exportar a Excel">
         <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/Excel_2013_logo.svg" alt="Exportar a Excel" width="30">
       </a>
+      <?php endif; ?>
     </div>
     <div class="card-body">
       <div class="table-responsive">
@@ -17,7 +19,7 @@
               <th>Casa</th>
               <th>Motivo</th>
               <th>Hora</th>
-              <th>Confirmada</th>
+              <th>Estado</th>
               <th>Acción</th>
             </tr>
           </thead>
@@ -46,11 +48,11 @@
                 <td>
                   <div class="d-flex justify-content-center gap-2">
                     <a href="detalle_visita.php?id=<?= $visita['id_visita'] ?>" class="btn btn-sm btn-outline-secondary" title="Ver"><i class="bi bi-eye"></i></a>
-                    <?php if (isset($visita['id_estado']) && $visita['id_estado'] == 1): ?>
+                    <?php if (isset($visita['id_estado']) && $visita['id_estado'] == 1 && in_array($_SESSION['user']['role'], [1, 2, 4])): ?>
                       <form method="POST" action="confirmar_visitas.php" class="d-inline">
                         <input type="hidden" name="id_visita" value="<?= $visita['id_visita'] ?>">
                         <button type="submit" class="btn btn-sm btn-success" title="Confirmar llegada">
-                          <i class="bi bi-check-circle"></i> 
+                          <i class="bi bi-check-circle"></i>
                         </button>
                       </form>
                     <?php endif; ?>
@@ -67,5 +69,3 @@
     </div>
   </div>
 </div>
- 
- 

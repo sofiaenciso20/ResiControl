@@ -16,12 +16,16 @@ $role_permissions = [
         'historial_visitas',
         'gestion_roles',
         'gestion_residentes',
+        'historial_paquetes',
         'gestion_reservas'
     ],
     3 => [
         'validar_visitas',
         'registro_reserva',
         'registro_visita',
+        'historial_visitas',
+        'historial_paquetes',
+        'gestion_reservas',
         'registro_persona'
         
     ],

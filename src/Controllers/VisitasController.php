@@ -13,33 +13,52 @@ class VisitasController {
     }
  
     public function index() {
-    $query = "SELECT
-                v.id_visita,
-                v.nombre AS visitante_nombre,
-                v.apellido AS visitante_apellido,
-                u.nombre AS residente_nombre,
-                u.apellido AS residente_apellido,
-                u.direccion_casa,
-                mv.motivo_visita,
-                v.fecha_ingreso,
-                v.hora_ingreso,
-                v.id_estado
-              FROM visitas v
-              INNER JOIN usuarios u ON v.id_usuarios = u.documento
-              INNER JOIN motivo_visita mv ON v.id_mot_visi = mv.id_mot_visi
-              ORDER BY v.fecha_ingreso DESC";
-   
-    $stmt = $this->conn->prepare($query);
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+        // Obtener el rol y documento del usuario en sesión
+        $rol = $_SESSION['user']['role'] ?? null;
+        $documento_usuario = $_SESSION['user']['documento'] ?? null;
+ 
+        $query = "SELECT v.*,
+                 v.nombre as visitante_nombre,
+                 v.apellido as visitante_apellido,
+                 u.nombre as residente_nombre,
+                 u.apellido as residente_apellido,
+                 u.direccion_casa,
+                 mv.motivo_visita
+                 FROM visitas v
+                 INNER JOIN usuarios u ON CAST(v.id_usuarios AS CHAR) = u.documento
+                 INNER JOIN motivo_visita mv ON v.id_mot_visi = mv.id_mot_visi
+                 ORDER BY v.fecha_ingreso DESC, v.hora_ingreso DESC";
+ 
+        // Filtrar según el rol
+        if ($rol == 3) { // Residente
+            $query = "SELECT v.*,
+                    v.nombre as visitante_nombre,
+                    v.apellido as visitante_apellido,
+                    u.nombre as residente_nombre,
+                    u.apellido as residente_apellido,
+                    u.direccion_casa,
+                    mv.motivo_visita
+                    FROM visitas v
+                    INNER JOIN usuarios u ON CAST(v.id_usuarios AS CHAR) = u.documento
+                    INNER JOIN motivo_visita mv ON v.id_mot_visi = mv.id_mot_visi
+                    WHERE CAST(v.id_usuarios AS CHAR) = :documento
+                    ORDER BY v.fecha_ingreso DESC, v.hora_ingreso DESC";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':documento', $documento_usuario);
+        } else { // Admin, SuperAdmin o Vigilante ven todas las visitas
+            $stmt = $this->conn->prepare($query);
+        }
+ 
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
  
     public function obtenerDetalleVisita($id) {
         $query = "SELECT v.id_visita, v.nombre, v.apellido, v.documento,
                          u.nombre AS residente_nombre, u.apellido AS residente_apellido, u.direccion_casa,
                          mv.motivo_visita, v.fecha_ingreso, v.hora_ingreso
                   FROM visitas v
-                  INNER JOIN usuarios u ON v.id_usuarios = u.documento
+                  INNER JOIN usuarios u ON CAST(v.id_usuarios AS CHAR) = u.documento
                   INNER JOIN motivo_visita mv ON v.id_mot_visi = mv.id_mot_visi
                   WHERE v.id_visita = :id";
         $stmt = $this->conn->prepare($query);

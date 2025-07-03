@@ -83,7 +83,7 @@ $usuario_logueado = !empty($_SESSION['is_logged_in']) && !empty($_SESSION['user'
                         Registro de Visitas
                     </a>
                 <?php endif; ?>
-                <?php if (tienePermiso('registro_reservas')): ?>
+                <?php if (tienePermiso('registro_reserva')): ?>
                     <a class="nav-link <?php echo ($pagina_actual ?? '') === 'registro' ? 'active' : ''; ?>"
                         href="/registro_reserva.php">
                         <div class="sb-nav-link-icon"><i class="fas fa-user-plus"></i></div>
