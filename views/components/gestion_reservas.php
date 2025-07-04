@@ -29,12 +29,16 @@
                 <td><?= htmlspecialchars($reserva['nombre_residente']) ?></td>
                 <td>
                   <?php
-                    $badgeClass = match($reserva['estado']) {
-                      'Pendiente' => 'bg-warning',
-                      'Aprobada' => 'bg-success',
-                      'Rechazada' => 'bg-danger',
-                      default => 'bg-secondary'
-                    };
+                    if ($reserva['estado'] === 'Pendiente') {
+                        $badgeClass = 'bg-warning';
+                    } elseif ($reserva['estado'] === 'Aprobada') {
+                        $badgeClass = 'bg-success';
+                    } elseif ($reserva['estado'] === 'Rechazada') {
+                        $badgeClass = 'bg-danger';
+                    } else {
+                        $badgeClass = 'bg-secondary';
+                    }
+ 
                   ?>
                   <span class="badge <?= $badgeClass ?>"><?= $reserva['estado'] ?></span>
                 </td>

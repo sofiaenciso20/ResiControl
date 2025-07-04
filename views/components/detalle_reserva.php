@@ -60,12 +60,15 @@
                     <p><strong>Teléfono:</strong> <?= htmlspecialchars($reserva['telefono_residente']) ?></p>
                     <p><strong>Estado:</strong>
                         <?php
-                        $badgeClass = match($reserva['estado']) {
-                            'Pendiente' => 'bg-warning',
-                            'Aprobada' => 'bg-success',
-                            'Rechazada' => 'bg-danger',
-                            default => 'bg-secondary'
-                        };
+                         if ($reserva['estado'] === 'Pendiente') {
+                            $badgeClass = 'bg-warning';
+                        } elseif ($reserva['estado'] === 'Aprobada') {
+                            $badgeClass = 'bg-success';
+                        } elseif ($reserva['estado'] === 'Rechazada') {
+                            $badgeClass = 'bg-danger';
+                        } else {
+                            $badgeClass = 'bg-secondary';
+                        }
                         ?>
                         <span class="badge <?= $badgeClass ?>"><?= htmlspecialchars($reserva['estado']) ?></span>
                     </p>
