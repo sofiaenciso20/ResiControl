@@ -1,35 +1,59 @@
 <?php
-// Incluye el controlador de Residentes y el autoload de Composer
+
+// ===============================================
+// VER/EDITAR RESIDENTE - CONTROLADOR DE DETALLE
+// ===============================================
+
+// Incluye el controlador de Residentes
 require_once __DIR__ . '/../src/Controllers/ResidentesController.php';
+
+// Carga automática de clases con Composer
 require_once __DIR__ . '/../vendor/autoload.php';
- 
-// Inicia la sesión para acceder a los datos del usuario logueado
-session_start();
- 
-// Obtiene el ID del residente desde la URL (?id=...)
+
+// ===============================================
+// INICIO DE SESIÓN
+// ===============================================
+
+session_start(); // Inicia la sesión para acceder a los datos del usuario logueado
+
+// ===============================================
+// OBTENCIÓN DEL ID Y MODO EDICIÓN
+// ===============================================
+
+// Captura el ID del residente desde la URL (?id=...)
 $id = $_GET['id'] ?? null;
- 
-// Determina si el usuario está en modo edición (solo admins/superadmins pueden editar)
+
+// Verifica si está en modo edición (solo Admin y Super Admin pueden editar)
 $modo_edicion = (
     isset($_GET['editar']) && $_GET['editar'] == 1 &&
-    isset($_SESSION['user']) && in_array($_SESSION['user']['role'], [1,2])
+    isset($_SESSION['user']) &&
+    in_array($_SESSION['user']['role'], [1, 2])
 );
- 
-// Inicializa variables
-$residente = null;
-$mensaje = '';
- 
-// Crea una instancia del controlador de residentes
-$controller = new ResidentesController();
- 
-// Si se envió el formulario por POST y el usuario tiene permisos de admin/superadmin
+
+// ===============================================
+// INICIALIZACIÓN DE VARIABLES
+// ===============================================
+
+$residente = null; // Guardará los datos del residente
+$mensaje = '';     // Mensaje para mostrar al usuario (ej. éxito al actualizar)
+
+// ===============================================
+// CONTROLADOR DE RESIDENTES
+// ===============================================
+
+$controller = new ResidentesController(); // Se instancia el controlador
+
+// ===============================================
+// PROCESAMIENTO DEL FORMULARIO (EDICIÓN)
+// ===============================================
+
 if (
     $_SERVER['REQUEST_METHOD'] === 'POST' &&
     $id &&
     isset($_SESSION['user']) &&
-    in_array($_SESSION['user']['role'], [1,2])
+    in_array($_SESSION['user']['role'], [1, 2])
 ) {
-    // Recoge los datos enviados por el formulario
+    // Recoge los datos enviados desde el formulario
     $datos = [
         'nombre' => $_POST['nombre'] ?? '',
         'apellido' => $_POST['apellido'] ?? '',
@@ -41,30 +65,48 @@ if (
         'cantidad_animales' => $_POST['cantidad_animales'] ?? '',
         'direccion_residencia' => $_POST['direccion_residencia'] ?? ''
     ];
+
     // Actualiza los datos del residente en la base de datos
     $controller->actualizarResidente($id, $datos);
-    // Redirige a la misma página en modo vista y muestra mensaje de éxito
+
+    // Redirige a la misma página sin modo edición y muestra mensaje de éxito
     header('Location: /ResiControl/public/detalle_persona.php?id=' . urlencode($id) . '&actualizado=1');
     exit;
 }
- 
-// Si hay un ID, obtiene los datos del residente para mostrar o editar
+
+// ===============================================
+// OBTENER DATOS DEL RESIDENTE
+// ===============================================
+
 if ($id) {
     $residente = $controller->obtenerDetalleResidente($id);
 }
-// Si la URL tiene ?actualizado=1, muestra mensaje de éxito
+
+// ===============================================
+// MENSAJE DE ACTUALIZACIÓN EXITOSA
+// ===============================================
+
 if (isset($_GET['actualizado'])) {
     $mensaje = 'Datos actualizados correctamente.';
 }
- 
-// Variables para el layout principal
-$titulo = 'Ver Residente';
-$pagina_actual = 'ver_residente';
- 
-// Inicia el output buffering para capturar el contenido de la vista
-ob_start();
-include __DIR__ . '/../views/components/detalle_persona.php';
-$contenido = ob_get_clean();
- 
-// Carga el layout principal y muestra la página completa
-require_once __DIR__ . '/../views/layout/main.php';
+
+// ===============================================
+// CONFIGURACIÓN PARA LA VISTA
+// ===============================================
+
+$titulo = 'Ver Residente';           // Título de la página
+$pagina_actual = 'ver_residente';    // Página actual para marcar activa en el menú
+
+// ===============================================
+// RENDERIZADO DE LA VISTA
+// ===============================================
+
+ob_start(); // Inicia el almacenamiento del contenido de la vista
+include __DIR__ . '/../views/components/detalle_persona.php'; // Vista que muestra o edita el residente
+$contenido = ob_get_clean(); // Captura el contenido generado
+
+// ===============================================
+// CARGA DEL LAYOUT PRINCIPAL
+// ===============================================
+
+require_once __DIR__ . '/../views/layout/main.php'; // Inserta el contenido en el diseño general
