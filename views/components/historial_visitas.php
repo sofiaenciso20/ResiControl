@@ -4,7 +4,7 @@
       <h3 class="mb-0">Historial de Visitas</h3>
       <?php if (in_array($_SESSION['user']['role'], [1, 2])): ?>
       <button type="button" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#exportModal" title="Exportar a Excel">
-      <img src="/assets/img/excel.png" alt="Exportar a Excel" width="30">
+      <img src="/assets/img/excel.png" alt="Exportar a Excel" width="50">
       </button>
       <?php endif; ?>
     </div>
