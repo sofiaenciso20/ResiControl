@@ -2,9 +2,11 @@
   <div class="card shadow-lg">
     <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
       <h3 class="mb-0">Gestión de Personas</h3>
-      <a href="exportar_excel.php" title="Exportar a Excel">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/Excel_2013_logo.svg" alt="Exportar a Excel" width="30">
-      </a>
+      <?php if (in_array($_SESSION['user']['role'], [1, 2])): ?>
+      <button type="button" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#exportModal" title="Exportar a Excel">
+      <img src="/assets/img/excel.png" alt="Exportar a Excel" width="30">
+      </button>
+      <?php endif; ?>
     </div>
     <div class="card-body">
       <div class="table-responsive">
@@ -54,3 +56,31 @@
     </div>
   </div>
 </div>
+<!-- Modal para exportar -->
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exportModalLabel">Exportar Residentes a Excel</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="exportar_residentes_excel.php" method="POST" id="exportForm">
+        <div class="modal-body">
+          <p>Se exportarán todos los residentes registrados en el sistema.</p>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="incluirInactivos" name="incluir_inactivos">
+            <label class="form-check-label" for="incluirInactivos">
+              Incluir residentes inactivos
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Exportar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+ 
+ 
