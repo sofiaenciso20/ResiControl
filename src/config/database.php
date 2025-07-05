@@ -12,7 +12,7 @@ class Database {
     private $host = 'localhost';
 
     // Propiedad privada que indica el nombre de la base de datos a usar
-    private $db_name = 'resicontrol1';
+    private $db_name = 'resicontrol2';
 
     // Propiedad privada con el nombre de usuario de la base de datos
     private $username = 'root'; // Cambiar si tu usuario no es "root"
