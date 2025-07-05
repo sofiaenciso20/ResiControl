@@ -139,34 +139,6 @@ $metrics = $dashboardController->getMetrics($user['documento'], $user['role']);
     </div>
 </div>
  
-<style>
-.card {
-    transition: transform 0.2s;
-    cursor: pointer;
-}
- 
-.card:hover {
-    transform: translateY(-5px);
-}
- 
-.card-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-}
- 
-.display-4 {
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-}
- 
-.bi {
-    margin-top: 1rem;
-}
-</style>
- 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Añadir enlaces a las cards

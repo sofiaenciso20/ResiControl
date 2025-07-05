@@ -1,35 +1,38 @@
 <?php
-session_start();
-require_once __DIR__ . '/../src/Config/database.php';
- 
-use App\Config\Database;
- 
-// Validar sesión y permisos (solo admin y super admin)
+session_start(); // Inicia la sesión para acceder a variables de usuario
+
+require_once __DIR__ . '/../src/Config/database.php'; // Incluye la configuración y clase de conexión a la base de datos
+
+use App\Config\Database; // Importa la clase Database del namespace correspondiente
+
+// Validar sesión y permisos (solo admin y super admin pueden exportar)
 if (!isset($_SESSION['user']) || !in_array($_SESSION['user']['role'], [1, 2])) {
     header('Location: login.php');
     exit;
 }
- 
-// Validar fechas
+
+// Obtiene los parámetros enviados por POST (fechas y tipos de paquetes a exportar)
 $fecha_inicio = $_POST['fecha_inicio'] ?? '';
 $fecha_fin = $_POST['fecha_fin'] ?? '';
 $incluir_entregados = isset($_POST['incluir_entregados']) && $_POST['incluir_entregados'] === 'on';
 $incluir_pendientes = isset($_POST['incluir_pendientes']) && $_POST['incluir_pendientes'] === 'on';
- 
+
+// Valida que las fechas hayan sido enviadas
 if (empty($fecha_inicio) || empty($fecha_fin)) {
     die('Las fechas son requeridas');
 }
- 
+
+// Valida que al menos un tipo de paquete haya sido seleccionado
 if (!$incluir_entregados && !$incluir_pendientes) {
     die('Debe seleccionar al menos un tipo de paquete');
 }
- 
+
 try {
     // Conexión a la base de datos usando la clase Database
     $db = new Database();
     $conn = $db->getConnection();
- 
-    // Consulta SQL para obtener paquetes
+
+    // Consulta SQL para obtener los paquetes en el rango de fechas y con los estados seleccionados
     $sql = "SELECT
         p.id_paquete,
         p.descripcion,
@@ -50,39 +53,40 @@ try {
     INNER JOIN usuarios res ON p.id_usuarios = res.documento
     INNER JOIN usuarios vig ON p.id_vigilante = vig.documento
     WHERE DATE(p.fech_hor_recep) BETWEEN :fecha_inicio AND :fecha_fin";
- 
-    // Construir condición para estados según checkboxes
+
+    // Construye la condición para filtrar por estados según los checkboxes seleccionados
     $estados = [];
-    if ($incluir_entregados) $estados[] = 2; // ID para estado Entregado
-    if ($incluir_pendientes) $estados[] = 1; // ID para estado Pendiente
-   
+    if ($incluir_entregados) $estados[] = 2; // Estado entregado
+    if ($incluir_pendientes) $estados[] = 1; // Estado pendiente
+
     if (!empty($estados)) {
         $sql .= " AND p.id_estado IN (" . implode(",", $estados) . ")";
     }
- 
+
     $sql .= " ORDER BY p.fech_hor_recep DESC";
- 
+
+    // Prepara y ejecuta la consulta
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(':fecha_inicio', $fecha_inicio);
     $stmt->bindParam(':fecha_fin', $fecha_fin);
     $stmt->execute();
     $paquetes = $stmt->fetchAll(PDO::FETCH_ASSOC);
- 
-    // Si no hay resultados
+
+    // Si no hay resultados, muestra un mensaje y termina la ejecución
     if (empty($paquetes)) {
         die('No hay paquetes registrados para el rango de fechas seleccionado');
     }
- 
-    // Generar CSV
+
+    // Configura las cabeceras para descargar el archivo como CSV
     header('Content-Type: text/csv');
     header('Content-Disposition: attachment; filename="Reporte_Paquetes_' . date('Y-m-d') . '.csv"');
-   
+
     $output = fopen('php://output', 'w');
-   
-    // Escribir el BOM para Excel
+
+    // Escribe el BOM para que Excel reconozca correctamente el UTF-8
     fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
-   
-    // Encabezados
+
+    // Escribe la fila de encabezados en el archivo CSV
     fputcsv($output, [
         'ID',
         'Residente',
@@ -93,8 +97,8 @@ try {
         'Fecha Entrega',
         'Estado'
     ]);
-   
-    // Datos
+
+    // Escribe los datos de cada paquete en el archivo CSV
     foreach ($paquetes as $paquete) {
         fputcsv($output, [
             $paquete['id_paquete'],
@@ -107,11 +111,12 @@ try {
             $paquete['estado_nombre']
         ]);
     }
-   
-    fclose($output);
+
+    fclose($output); // Cierra el archivo de salida
     exit;
- 
+
 } catch (PDOException $e) {
+    // Si ocurre un error de base de datos, muestra el mensaje de error
     die("Error en la base de datos: " . $e->getMessage());
 }
 ?>

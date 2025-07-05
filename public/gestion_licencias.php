@@ -1,38 +1,38 @@
 <?php
-session_start();
+session_start(); // Inicia la sesión para acceder a variables de usuario
 
-// Cargar el autoloader de Composer y las configuraciones
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../src/Config/permissions.php';
+// Carga dependencias y permisos
+require_once __DIR__ . '/../vendor/autoload.php'; // Autoload de Composer para cargar clases externas
+require_once __DIR__ . '/../src/Config/permissions.php'; // Archivo de funciones de permisos
 
-use App\Controllers\LicenciasController;
+use App\Controllers\LicenciasController; // Importa el controlador de licencias
 
-// 1. Verificación de autenticación
+// 1. Verifica que el usuario esté autenticado
 if (!isset($_SESSION['user'])) {
-    header('Location: login.php');
+    header('Location: login.php'); // Si no hay usuario en sesión, redirige al login
     exit;
 }
 
-// 2. Verificación de permisos (solo superadmin tiene acceso)
+// 2. Verifica que el usuario tenga permiso y sea superadmin (rol 1)
 if (!tienePermiso('gestion_licencias') || $_SESSION['user']['role'] != 1) {
-    header('Location: dashboard.php');
+    header('Location: dashboard.php'); // Si no tiene permiso o no es superadmin, redirige al dashboard
     exit;
 }
 
-// 3. Inicialización de variables y controlador
-$pageTitle = "Gestión de Licencias";
-$pagina_actual = 'licencias';
+// 3. Inicializa variables y obtiene las licencias desde el controlador
+$pageTitle = "Gestión de Licencias"; // Título de la página
+$pagina_actual = 'licencias'; // Variable para resaltar el menú activo
 
 try {
-    $licenciasController = new LicenciasController();
-    $resultado = $licenciasController->obtenerLicencias();
-    $licencias = $resultado['success'] ? $resultado['data'] : [];
+    $licenciasController = new LicenciasController(); // Instancia el controlador
+    $resultado = $licenciasController->obtenerLicencias(); // Obtiene todas las licencias
+    $licencias = $resultado['success'] ? $resultado['data'] : []; // Si hay éxito, guarda las licencias, si no, un array vacío
 } catch (Exception $e) {
-    error_log("Error en gestion_licencias.php: " . $e->getMessage());
+    error_log("Error en gestion_licencias.php: " . $e->getMessage()); // Log de error si falla la consulta
     $licencias = [];
 }
 
-// 4. Renderizar la vista
+// 4. Inicia el buffer de salida para renderizar la vista
 ob_start();
 ?>
 
@@ -51,6 +51,7 @@ ob_start();
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">Listado de Licencias</h4>
+                        <!-- Botón para abrir el modal de creación de licencia -->
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearLicencia">
                             <i class="bi bi-plus-circle me-2"></i>Nueva Licencia
                         </button>
@@ -81,12 +82,15 @@ ob_start();
                             </thead>
                             <tbody>
                                 <?php if (empty($licencias)): ?>
+                                <!-- Si no hay licencias, muestra mensaje -->
                                 <tr>
                                     <td colspan="8" class="text-center">No hay licencias registradas</td>
                                 </tr>
                                 <?php else: ?>
                                 <?php foreach ($licencias as $licencia): 
+                                    // Obtiene estadísticas de uso de la licencia
                                     $estadisticas = $licenciasController->obtenerEstadisticasUso($licencia['codigo_licencia']);
+                                    // Determina la clase del badge según el estado
                                     $estado_clase = $licencia['estado'] === 'activa' ? 'success' : 
                                                  ($licencia['estado'] === 'inactiva' ? 'danger' : 'warning');
                                 ?>
@@ -94,6 +98,7 @@ ob_start();
                                     <td><?php echo htmlspecialchars($licencia['codigo_licencia']); ?></td>
                                     <td><?php echo htmlspecialchars($licencia['nombre_residencial']); ?></td>
                                     <td>
+                                        <!-- Badge de estado -->
                                         <span class="badge bg-<?php echo $estado_clase; ?>">
                                             <?php echo ucfirst($licencia['estado']); ?>
                                         </span>
@@ -101,6 +106,7 @@ ob_start();
                                     <td><?php echo date('d/m/Y', strtotime($licencia['fecha_inicio'])); ?></td>
                                     <td><?php echo date('d/m/Y', strtotime($licencia['fecha_fin'])); ?></td>
                                     <td>
+                                        <!-- Barra de progreso de usuarios -->
                                         <div class="d-flex align-items-center">
                                             <div class="progress flex-grow-1" style="height: 8px;">
                                                 <div class="progress-bar <?php echo $estadisticas['porcentaje_usuarios'] > 90 ? 'bg-danger' : 'bg-primary'; ?>" 
@@ -117,6 +123,7 @@ ob_start();
                                         </div>
                                     </td>
                                     <td>
+                                        <!-- Barra de progreso de residentes -->
                                         <div class="d-flex align-items-center">
                                             <div class="progress flex-grow-1" style="height: 8px;">
                                                 <div class="progress-bar <?php echo $estadisticas['porcentaje_residentes'] > 90 ? 'bg-danger' : 'bg-success'; ?>" 
@@ -133,6 +140,7 @@ ob_start();
                                         </div>
                                     </td>
                                     <td>
+                                        <!-- Botones de acciones: editar, ver, activar/desactivar -->
                                         <div class="btn-group">
                                             <button type="button" 
                                                     class="btn btn-sm btn-outline-primary" 
@@ -179,6 +187,7 @@ ob_start();
                 <h5 class="modal-title" id="modalCrearLicenciaLabel">Nueva Licencia</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <!-- Formulario de creación de licencia -->
             <form id="formCrearLicencia" onsubmit="return crearLicencia(event)">
                 <div class="modal-body">
                     <div class="row g-3">
@@ -242,6 +251,7 @@ ob_start();
                 <h5 class="modal-title" id="modalEditarLicenciaLabel">Editar Licencia</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <!-- Formulario de edición de licencia -->
             <form id="formEditarLicencia" onsubmit="return actualizarLicencia(event)">
                 <input type="hidden" id="editar_licencia_id" name="licencia_id">
                 <div class="modal-body">
@@ -322,10 +332,9 @@ ob_start();
 
 <!-- Scripts específicos de la página -->
 <script>
+// Envía el formulario de creación de licencia por AJAX
 function crearLicencia(event) {
     event.preventDefault();
-    
-    // Obtener el formulario y sus datos
     const form = event.target;
     const formData = new FormData(form);
     const datos = {
@@ -336,7 +345,6 @@ function crearLicencia(event) {
         max_residentes: parseInt(formData.get('max_residentes')),
         caracteristicas: formData.getAll('caracteristicas[]')
     };
-
     // Log para debugging
     console.log('Datos del formulario:', datos);
 
@@ -376,26 +384,31 @@ function crearLicencia(event) {
     return false;
 }
 
+// Redirige a la página de edición de licencia
 function editarLicencia(id) {
     window.location.href = `editar_licencia.php?id=${id}`;
 }
 
+// Redirige a la página de detalles de licencia
 function verDetalles(id) {
     window.location.href = `detalle_licencia.php?id=${id}`;
 }
 
+// Confirma y desactiva una licencia
 function desactivarLicencia(id) {
     if (confirm('¿Está seguro de que desea desactivar esta licencia?')) {
         actualizarEstadoLicencia(id, 'inactiva');
     }
 }
 
+// Confirma y activa una licencia
 function activarLicencia(id) {
     if (confirm('¿Está seguro de que desea activar esta licencia?')) {
         actualizarEstadoLicencia(id, 'activa');
     }
 }
 
+// Envía la solicitud para cambiar el estado de la licencia
 function actualizarEstadoLicencia(id, estado) {
     fetch('actualizar_estado_licencia.php', {
         method: 'POST',
@@ -418,7 +431,7 @@ function actualizarEstadoLicencia(id, estado) {
     });
 }
 
-// Función para editar licencia
+// Función para editar licencia (AJAX, llena el modal de edición)
 async function editarLicencia(id) {
     try {
         const response = await fetch(`obtener_licencia.php?id=${id}`);
@@ -426,20 +439,17 @@ async function editarLicencia(id) {
         
         if (data.success) {
             const licencia = data.data;
-            
-            // Llenar el formulario
+            // Llenar el formulario de edición
             document.getElementById('editar_licencia_id').value = licencia.id;
             document.getElementById('editar_nombre_residencial').value = licencia.nombre_residencial;
             document.getElementById('editar_fecha_fin').value = licencia.fecha_fin;
             document.getElementById('editar_max_usuarios').value = licencia.max_usuarios;
             document.getElementById('editar_max_residentes').value = licencia.max_residentes;
-            
             // Marcar características
             const caracteristicas = JSON.parse(licencia.caracteristicas || '[]');
             document.getElementById('editar_caract_visitas').checked = caracteristicas.includes('gestion_visitas');
             document.getElementById('editar_caract_paquetes').checked = caracteristicas.includes('gestion_paquetes');
             document.getElementById('editar_caract_reservas').checked = caracteristicas.includes('gestion_reservas');
-            
             // Mostrar modal
             new bootstrap.Modal(document.getElementById('modalEditarLicencia')).show();
         } else {
@@ -451,7 +461,7 @@ async function editarLicencia(id) {
     }
 }
 
-// Función para actualizar licencia
+// Envía el formulario de edición de licencia por AJAX
 async function actualizarLicencia(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -483,7 +493,7 @@ async function actualizarLicencia(event) {
     return false;
 }
 
-// Función para ver detalles
+// Muestra los detalles de la licencia en el modal
 async function verDetalles(id) {
     try {
         const response = await fetch(`obtener_licencia.php?id=${id}`);
@@ -491,19 +501,16 @@ async function verDetalles(id) {
         
         if (data.success) {
             const licencia = data.data;
-            
             // Llenar los detalles
             document.getElementById('detalle_codigo').textContent = licencia.codigo_licencia;
             document.getElementById('detalle_residencial').textContent = licencia.nombre_residencial;
             document.getElementById('detalle_estado').textContent = licencia.estado.toUpperCase();
             document.getElementById('detalle_fecha_inicio').textContent = new Date(licencia.fecha_inicio).toLocaleDateString();
             document.getElementById('detalle_fecha_fin').textContent = new Date(licencia.fecha_fin).toLocaleDateString();
-            
             // Mostrar estadísticas
             const estadisticas = await obtenerEstadisticas(licencia.codigo_licencia);
             document.getElementById('detalle_usuarios').textContent = `${estadisticas.total_usuarios}/${licencia.max_usuarios}`;
             document.getElementById('detalle_residentes').textContent = `${estadisticas.total_residentes}/${licencia.max_residentes}`;
-            
             // Mostrar características
             const caracteristicas = JSON.parse(licencia.caracteristicas || '[]');
             const ulCaracteristicas = document.getElementById('detalle_caracteristicas');
@@ -513,7 +520,6 @@ async function verDetalles(id) {
                 li.textContent = caract.replace('gestion_', '').replace('_', ' ').toUpperCase();
                 ulCaracteristicas.appendChild(li);
             });
-            
             // Mostrar modal
             new bootstrap.Modal(document.getElementById('modalDetallesLicencia')).show();
         } else {
@@ -525,7 +531,7 @@ async function verDetalles(id) {
     }
 }
 
-// Función para obtener estadísticas
+// Obtiene estadísticas de uso de la licencia por AJAX
 async function obtenerEstadisticas(codigo) {
     try {
         const response = await fetch(`obtener_estadisticas.php?codigo=${codigo}`);
@@ -537,12 +543,11 @@ async function obtenerEstadisticas(codigo) {
     }
 }
 
-// Función para activar/desactivar licencia
+// Cambia el estado de la licencia (activa/inactiva) con confirmación
 async function cambiarEstadoLicencia(id, estado) {
     if (!confirm(`¿Está seguro que desea ${estado === 'activa' ? 'activar' : 'desactivar'} esta licencia?`)) {
         return;
     }
-    
     try {
         const response = await fetch('cambiar_estado_licencia.php', {
             method: 'POST',
@@ -551,9 +556,7 @@ async function cambiarEstadoLicencia(id, estado) {
             },
             body: JSON.stringify({ id, estado })
         });
-        
         const data = await response.json();
-        
         if (data.success) {
             alert('Estado de licencia actualizado exitosamente');
             window.location.reload();
@@ -566,7 +569,7 @@ async function cambiarEstadoLicencia(id, estado) {
     }
 }
 
-// Funciones de activación/desactivación
+// Funciones de activación/desactivación para usar desde los botones
 function activarLicencia(id) {
     cambiarEstadoLicencia(id, 'activa');
 }
@@ -577,6 +580,7 @@ function desactivarLicencia(id) {
 </script>
 
 <?php
+// Finaliza el buffer de salida y lo asigna a $contenido para el layout principal
 $contenido = ob_get_clean();
-require_once __DIR__ . '/../views/layout/main.php';
+require_once __DIR__ . '/../views/layout/main.php'; // Incluye el layout principal de la aplicación
 ?>

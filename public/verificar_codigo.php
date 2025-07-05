@@ -1,43 +1,68 @@
 <?php
-// Cargar el autoload de Composer (por si necesitas dependencias)
+
+// --------------------------------------
+// Dependencias y configuración inicial
+// --------------------------------------
+
+// Carga automática de clases con Composer
 require_once __DIR__ . '/../vendor/autoload.php';
- 
-// Configuración de errores para desarrollo
+
+// Habilita todos los errores para facilitar el desarrollo (no se recomienda en producción)
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
+
+// Define la zona horaria por defecto (en este caso, Bogotá, Colombia)
 date_default_timezone_set('America/Bogota');
- 
-// Variable para mostrar mensajes de éxito o error en la vista
+
+// Inicializa una variable para mostrar mensajes (éxito o error) en la vista
 $mensaje = '';
- 
-// Si el formulario fue enviado (POST) y se recibieron los campos necesarios
+
+// --------------------------------------
+// Procesamiento del formulario
+// --------------------------------------
+
+// Verifica si la solicitud es de tipo POST y si se enviaron los campos requeridos
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['correo'], $_POST['codigo'], $_POST['nueva_contra'])) {
-    // Sanitiza el correo recibido
+    
+    // Sanitiza el campo de correo para evitar entradas maliciosas
     $correo = filter_var($_POST['correo'], FILTER_SANITIZE_EMAIL);
-    // Obtiene el código y la nueva contraseña del formulario
+
+    // Obtiene el código de verificación y la nueva contraseña directamente
     $codigo = $_POST['codigo'];
     $nueva_contra = $_POST['nueva_contra'];
- 
+
+    // --------------------------------------
     // Conexión a la base de datos
+    // --------------------------------------
+
     require_once __DIR__ . '/../src/Config/database.php';
     $db = new \App\Config\Database();
     $conn = $db->getConnection();
- 
-    // Buscar usuario por correo y código de recuperación
+
+    // Busca al usuario que tenga ese correo y código de recuperación
     $stmt = $conn->prepare("SELECT * FROM usuarios WHERE correo = ? AND codigo_recuperacion = ? LIMIT 1");
     $stmt->execute([$correo, $codigo]);
     $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
- 
-    // Si se encontró el usuario y el código es correcto
+
+    // --------------------------------------
+    // Verificación del código y expiración
+    // --------------------------------------
+
     if ($usuario) {
-        // Verificar que el código no haya expirado
+        // Verifica si el código aún está dentro del tiempo válido
         if (strtotime($usuario['codigo_expira']) >= time()) {
-            // Hashear la nueva contraseña
+
+            // Hashea la nueva contraseña para guardarla de forma segura
             $hash = password_hash($nueva_contra, PASSWORD_DEFAULT);
-            // Actualizar la contraseña y limpiar el código de recuperación y expiración
+
+            // Actualiza la contraseña y limpia el código de recuperación y su expiración
             $stmtUpdate = $conn->prepare("UPDATE usuarios SET contrasena = ?, codigo_recuperacion = NULL, codigo_expira = NULL WHERE correo = ?");
             $stmtUpdate->execute([$hash, $correo]);
-            // (Opcional) Iniciar sesión automáticamente con los datos del usuario
+
+            // --------------------------------------
+            // Iniciar sesión automáticamente (opcional)
+            // --------------------------------------
+
             session_start();
             $_SESSION['is_logged_in'] = true;
             $_SESSION['user'] = [
@@ -46,27 +71,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['correo'], $_POST['cod
                 'email' => $usuario['correo'],
                 'role' => $usuario['id_rol']
             ];
-            // Redirigir al dashboard tras el cambio de contraseña exitoso
+
+            // Redirige al dashboard del usuario después de cambiar la contraseña
             header('Location: dashboard.php');
             exit;
         } else {
-            // Si el código ha expirado, mostrar mensaje de error
+            // Si el código ha expirado, muestra un mensaje de advertencia
             $mensaje = 'El código ha expirado. Solicita uno nuevo.';
         }
     } else {
-        // Si el código o el correo no son correctos, mostrar mensaje de error
+        // Si no se encuentra usuario con ese correo y código, muestra mensaje de error
         $mensaje = 'El código o el correo no son correctos.';
     }
 }
- 
-// Variables para la página (título y página actual)
+
+// --------------------------------------
+// Preparación para mostrar la vista
+// --------------------------------------
+
+// Variables para el título y nombre de la página (útil para el layout y navegación)
 $titulo = 'Verificar Código';
 $pagina_actual = 'verificar_codigo';
- 
-// Inicia el output buffering para capturar el contenido de la vista
+
+// Inicia almacenamiento en búfer para capturar el contenido de la vista
 ob_start();
+
+// Se incluye la vista con el formulario para ingresar código y nueva contraseña
 require_once __DIR__ . '/../views/components/verificar_codigo.php';
+
+// Guarda el contenido capturado en la variable $contenido
 $contenido = ob_get_clean();
- 
-// Carga el layout principal y muestra la página completa
+
+// Carga el layout principal, que insertará el contenido en su estructura general (header, footer, etc.)
 require_once __DIR__ . '/../views/layout/main.php';

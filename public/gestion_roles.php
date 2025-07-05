@@ -1,12 +1,12 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../src/Config/permissions.php';
+require_once __DIR__ . '/../vendor/autoload.php'; // Carga el autoloader de Composer para dependencias externas
+require_once __DIR__ . '/../src/Config/permissions.php'; // Incluye las funciones de gestión de permisos
 
-session_start();
+session_start(); // Inicia la sesión para acceder a variables de usuario
 
 // Validar permiso antes de mostrar la vista
 if (!tienePermiso('gestion_roles')) {
-    header('Location: dashboard.php');
+    header('Location: dashboard.php'); // Si no tiene permiso, redirige al dashboard
     exit;
 }
 
@@ -22,8 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['documento'], $_POST['
     $conn = $db->getConnection();
 
     // Ejecuta la consulta SQL para actualizar el rol del usuario correspondiente
-    // Actualiza la columna id_rol en la tabla usuarios
-    // solo en el registro donde el documento coincida.
+    // Actualiza la columna id_rol en la tabla usuarios solo en el registro donde el documento coincida.
     $stmt = $conn->prepare("UPDATE usuarios SET id_rol = ? WHERE documento = ?");
     $stmt->execute([$id_rol, $documento]);
 
@@ -35,8 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['documento'], $_POST['
     exit;
 }
 
-//Consulta para mostrar los usuarios y sus roles
-require_once __DIR__ . '/../src/Config/database.php';
+// Consulta para mostrar los usuarios y sus roles
+require_once __DIR__ . '/../src/Config/database.php'; // Incluye la configuración y clase de conexión a la base de datos
 $db = new \App\Config\Database();
 $conn = $db->getConnection();
 
@@ -46,7 +45,7 @@ $query = "SELECT u.documento, u.nombre, u.apellido, u.correo, r.rol, u.id_rol
           JOIN roles r ON u.id_rol = r.id_rol";
 $stmt = $conn->prepare($query);
 $stmt->execute();
-//Obtiene todos los resultados que devolvió la consulta.
+// Obtiene todos los resultados que devolvió la consulta.
 $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Consulta todos los roles para mostrar en el <select>
@@ -66,7 +65,7 @@ $pagina_actual = 'gestion_roles';
 
 // Cargar contenido dentro del layout
 ob_start();
-require_once __DIR__ . '/../views/components/gestion_roles.php';
+require_once __DIR__ . '/../views/components/gestion_roles.php'; // Incluye la vista que muestra la gestión de roles
 $contenido = ob_get_clean();
 
-require_once __DIR__ . '/../views/layout/main.php';
+require_once __DIR__ . '/../views/layout/main.php'; // Incluye el layout principal de la aplicación

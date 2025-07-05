@@ -1,34 +1,36 @@
 <?php
 // Controlador para manejar todas las operaciones relacionadas con reservas
 // src/Controllers/ReservasController.php
- 
-// Importamos la clase de conexión a la base de datos
+
+// Importa la clase de conexión a la base de datos
 require_once __DIR__ . '/../config/Database.php';
 use App\Config\Database;
- 
+
+// Definición del controlador de reservas
 class ReservasController {
-    // Propiedad para almacenar la conexión a la base de datos
+    // Conexión a la base de datos
     private $conn;
- 
+
     /**
      * Constructor de la clase
-     * Inicializa la conexión a la base de datos
+     * Crea la conexión a la base de datos cuando se instancia el controlador
      */
     public function __construct() {
         $db = new Database();
         $this->conn = $db->getConnection();
     }
- 
+
     /**
-     * Obtiene todas las reservas con información relacionada
-     * Incluye zona, horario, datos del residente y estado
-     * @return array Lista de reservas ordenadas por fecha descendente
+     * Muestra todas las reservas registradas en el sistema.
+     * Si el usuario es residente, filtra por su documento.
+     * @return array Lista de reservas con datos de zonas, horarios, estado y usuarios relacionados
      */
     public function index() {
-        // Obtener el rol y documento del usuario en sesión
+        // Obtiene el rol y documento del usuario autenticado
         $rol = $_SESSION['user']['role'] ?? null;
         $documento_usuario = $_SESSION['user']['documento'] ?? null;
- 
+
+        // Consulta SQL para traer datos de todas las reservas y sus relaciones
         $query = "SELECT
             r.id_reservas,
             r.fecha,
@@ -48,24 +50,26 @@ class ReservasController {
             INNER JOIN estado e ON r.id_estado = e.id_estado
             LEFT JOIN usuarios a ON CAST(r.id_administrador AS CHAR) = a.documento
             LEFT JOIN motivo_zonas mz ON r.id_mot_zonas = mz.id_mot_zonas";
- 
-        // Filtrar según el rol
-        if ($rol == 3) { // Residente
+
+        // Si el usuario es residente (rol 3), solo ve sus propias reservas
+        if ($rol == 3) {
             $query .= " WHERE CAST(r.id_usuarios AS CHAR) = :documento";
             $stmt = $this->conn->prepare($query . " ORDER BY r.fecha DESC, h.horario ASC");
             $stmt->bindParam(':documento', $documento_usuario);
-        } else { // Admin ve todas las reservas
+        } else {
+            // Si es administrador, puede ver todas las reservas
             $stmt = $this->conn->prepare($query . " ORDER BY r.fecha DESC, h.horario ASC");
         }
- 
+
+        // Ejecuta la consulta y devuelve los resultados como arreglo asociativo
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
- 
+
     /**
-     * Obtiene los detalles completos de una reserva específica
-     * @param int $id ID de la reserva a consultar
-     * @return array|false Datos de la reserva o false si no existe
+     * Obtiene el detalle completo de una reserva por su ID
+     * @param int $id ID de la reserva
+     * @return array|false Detalle completo o false si no se encuentra
      */
     public function obtenerDetalleReserva($id) {
         $query = "SELECT
@@ -86,17 +90,18 @@ class ReservasController {
             LEFT JOIN usuarios a ON CAST(r.id_administrador AS CHAR) = a.documento
             LEFT JOIN motivo_zonas mz ON r.id_mot_zonas = mz.id_mot_zonas
             WHERE r.id_reservas = :id";
- 
+
+        // Prepara y ejecuta la consulta con el ID de la reserva
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
- 
+
     /**
      * Actualiza los datos de una reserva existente
-     * @param int $id ID de la reserva a actualizar
-     * @param array $datos Nuevos datos de la reserva (fecha, horario, observaciones, motivo)
+     * @param int $id ID de la reserva
+     * @param array $datos Arreglo con los nuevos valores (fecha, horario, observaciones, motivo)
      */
     public function actualizarReserva($id, $datos) {
         $query = "UPDATE reservas
@@ -105,6 +110,8 @@ class ReservasController {
                       observaciones = :observaciones,
                       id_mot_zonas = :id_mot_zonas
                   WHERE id_reservas = :id";
+
+        // Prepara y ejecuta la actualización
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':fecha', $datos['fecha']);
         $stmt->bindParam(':id_horario', $datos['id_horario']);
@@ -113,69 +120,69 @@ class ReservasController {
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
     }
- 
+
     /**
-     * Aprueba una reserva cambiando su estado a 2 (aprobada)
-     * @param int $id ID de la reserva a aprobar
-     * @return bool True si la actualización fue exitosa, False en caso contrario
+     * Cambia el estado de una reserva a "Aprobada" (estado = 2)
+     * @param int $id_reserva ID de la reserva
+     * @return bool true si se aprobó correctamente
      */
     public function aprobarReserva($id_reserva) {
         try {
-            $this->conn->beginTransaction();
-           
-            // Verificar que la reserva existe y está pendiente
+            $this->conn->beginTransaction(); // Inicia transacción
+
+            // Verifica que la reserva existe y está pendiente
             $stmt = $this->conn->prepare("
                 SELECT id_estado
                 FROM reservas
                 WHERE id_reservas = ?
-                AND id_estado = 1"); // 1 = Pendiente
+                AND id_estado = 1");
             $stmt->execute([$id_reserva]);
-           
+
             if (!$stmt->fetch()) {
                 throw new Exception("La reserva no existe o ya fue procesada");
             }
- 
-            // Actualizar la reserva
+
+            // Actualiza el estado a "Aprobada", asigna admin y fecha de aprobación
             $stmt = $this->conn->prepare("
                 UPDATE reservas
                 SET id_estado = 2,
                     id_administrador = ?,
                     fecha_apro = CURDATE()
                 WHERE id_reservas = ?");
-           
             $admin_documento = $_SESSION['user']['documento'];
             $stmt->execute([$admin_documento, $id_reserva]);
-           
-            $this->conn->commit();
+
+            $this->conn->commit(); // Guarda los cambios
             return true;
         } catch (Exception $e) {
-            $this->conn->rollBack();
+            $this->conn->rollBack(); // Revierte si hay error
             throw $e;
         }
     }
- 
+
     /**
-     * Rechaza una reserva cambiando su estado a 3 (rechazada)
-     * @param int $id ID de la reserva a rechazar
-     * @return bool True si la actualización fue exitosa, False en caso contrario
+     * Cambia el estado de una reserva a "Rechazada" (estado = 3) y agrega observaciones
+     * @param int $id_reserva ID de la reserva
+     * @param string $observaciones Comentario del rechazo
+     * @return bool true si se rechazó correctamente
      */
     public function rechazarReserva($id_reserva, $observaciones) {
         try {
-            $this->conn->beginTransaction();
-           
-            // Verificar que la reserva existe y está pendiente
+            $this->conn->beginTransaction(); // Inicia transacción
+
+            // Verifica que la reserva existe y está pendiente
             $stmt = $this->conn->prepare("
                 SELECT id_estado
                 FROM reservas
                 WHERE id_reservas = ?
-                AND id_estado = 1"); // 1 = Pendiente
+                AND id_estado = 1");
             $stmt->execute([$id_reserva]);
-           
+
             if (!$stmt->fetch()) {
                 throw new Exception("La reserva no existe o ya fue procesada");
             }
- 
-            // Actualizar la reserva
+
+            // Actualiza el estado a "Rechazada", guarda admin, fecha y observación
             $stmt = $this->conn->prepare("
                 UPDATE reservas
                 SET id_estado = 3,
@@ -183,16 +190,14 @@ class ReservasController {
                     fecha_apro = CURDATE(),
                     observaciones = ?
                 WHERE id_reservas = ?");
-           
             $admin_documento = $_SESSION['user']['documento'];
             $stmt->execute([$admin_documento, $observaciones, $id_reserva]);
-           
-            $this->conn->commit();
+
+            $this->conn->commit(); // Guarda los cambios
             return true;
         } catch (Exception $e) {
-            $this->conn->rollBack();
+            $this->conn->rollBack(); // Revierte si hay error
             throw $e;
         }
     }
 }
- 

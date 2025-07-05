@@ -1,36 +1,38 @@
 <?php
- 
-//cargar el autoload de composer
+
+// Carga el autoloader de Composer para dependencias externas y clases autoload
 require_once __DIR__ . '/../vendor/autoload.php';
- 
-//configuracion de errores para desarrollo
+
+// Configuración de errores para desarrollo: muestra todos los errores y advertencias
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
- 
-//zona horaria por defecto
+
+// Establece la zona horaria por defecto
 date_default_timezone_set('America/Bogota');
- 
-//inciar la sesion
+
+// Inicia la sesión para acceder a variables de usuario
 session_start();
- 
-// Manejar el envío del formulario
+
+// Inicializa variables para mensajes de error y éxito
 $error_message = '';
 $success_message = '';
- //si el formuairio se ha enviado por el metodo POST
+
+// Si el formulario se ha enviado por el método POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST'){
+    // Obtiene y sanitiza el email enviado por el formulario
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+    // Obtiene la contraseña enviada por el formulario
     $password = $_POST['password'] ?? '';
    
- //contiene la logica de autenticacion
+    // Incluye el controlador de autenticación
     require_once __DIR__ . '/../src/Controllers/AuthController.php';
-    //almacena la auntenticacion de usuario
+    // Crea una instancia del controlador de autenticación
     $auth = new AuthController();
-    //metodo login del controlador de autenticacion
-    //intenta autenticar al usuario con el email y la contraseña proporcionados
+    // Intenta autenticar al usuario con el email y la contraseña proporcionados
     $user = $auth->login($email, $password);
- 
+
     if ($user) {
-        // Inicio de sesión exitoso
+        // Si la autenticación es exitosa, guarda los datos del usuario en la sesión
         $_SESSION['is_logged_in'] = true;
         $_SESSION['user'] = [
             'documento' => $user['documento'],
@@ -38,21 +40,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
             'email' => $user['correo'],
             'role' => $user['rol']
         ];
- 
-        
-        // Redirigir al dashboard
+
+        // Redirige al dashboard principal
         header('Location: dashboard.php');
         exit;
     } else {
+        // Si la autenticación falla, muestra un mensaje de error
         $error_message = 'Credenciales incorrectas. Por favor, intenta de nuevo.';
     }
 }
- 
-//variables para la pagina
+
+// Variables para la página (título y menú activo)
 $titulo = 'Login - ResiControl';
 $pagina_actual = 'login';
- 
-//contenido de la pagina
+
+// Inicia el buffer de salida para capturar el contenido HTML generado por la vista
 ob_start();
 ?>
 <?php if ($error_message): ?>
@@ -61,20 +63,20 @@ ob_start();
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
- 
+
 <?php if ($success_message): ?>
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <?php echo htmlspecialchars($success_message); ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
- 
+
 <?php
-//importar el componente login
+// Importa el componente de la vista del formulario de login
 require_once __DIR__ . '/../views/components/login.php';
- 
-//capturar el contenido de la pagina
+
+// Captura el contenido generado en el buffer y lo guarda en la variable $contenido
 $contenido = ob_get_clean();
- 
-//cargar layout principal
+
+// Carga el layout principal de la aplicación, que usará $contenido para mostrar la página completa
 require_once __DIR__ . '/../views/layout/main.php';

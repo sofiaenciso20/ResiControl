@@ -41,61 +41,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['correo'])) {
         $stmtUpdate->execute([$codigo, $expira, $correo]);
  
         // Crear una instancia de PHPMailer para enviar el correo
-        //El argumento true le dice a PHPMailer que lance excepciones si ocurre un error (para capturarlas con try-catch)
         $mail = new PHPMailer(true);
-        //Se abre un bloque try para intentar enviar el correo.
-
-        //Si algo falla, se pasará al catch(Exception $e)
         try {
             // Configuración SMTP para Gmail
-            //Indica que vas a enviar el correo usando SMTP, que es un protocolo para el envío seguro de correos
             $mail->isSMTP();
-
-            //Este es el servidor SMTP de Gmail, el cual PHPMailer usará para enviar el correo
             $mail->Host = 'smtp.gmail.com';
-
-            //Activa la autenticación SMTP, es decir, PHPMailer necesita un usuario y contraseña válidos para enviar
             $mail->SMTPAuth = true;
-
-            $mail->Username = 'rresicontrol@gmail.com'; //Es el correo electrónico remitente, el que enviará el mensaje
-            $mail->Password = 'oaiejctxxsymgzwz'; //Es la contraseña de aplicación generada en tu cuenta de Google
-
-            //Activa el cifrado TLS (Transport Layer Security), que protege la información que viaja entre tu servidor y Gmail.
+            $mail->Username = 'rresicontrol@gmail.com'; // Correo remitente
+            $mail->Password = 'oaiejctxxsymgzwz'; // Contraseña de aplicación de Gmail
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-
-            $mail->Port = 587;//El puerto 587 es el estándar para enviar correos usando SMTP con cifrado TLS.
+            $mail->Port = 587;
            
             // Configuración del remitente y destinatario
-            //Define quién envía el mensaje.'ResiControl' será el nombre que verá el usuario como remitente
             $mail->setFrom('rresicontrol@gmail.com', 'ResiControl');
-
-            //Define a quién va dirigido el correo (el destinatario).Usa el correo proporcionado y el nombre completo del usuario
             $mail->addAddress($correo, $usuario['nombre'] . ' ' . $usuario['apellido']);
-
-            $mail->isHTML(true);//Indica que el cuerpo del mensaje estará en formato HTML, no texto plano
-
-            //Asunto del correo que el usuario verá en su bandeja de entrada
+            $mail->isHTML(true);
             $mail->Subject = 'Código de recuperación de contraseña';
-
-            // Cuerpo del correo con el código de recuperación
             $mail->Body = '<p>Hola,</p><p>Tu código de recuperación es: <b>' . $codigo . '</b></p><p>Este código expirará en 10 minutos.</p>';
  
-            //Envía el mensaje con todas las configuraciones anteriores.Si todo funciona, no hay errores.
+            // Envía el mensaje
             $mail->send();
  
             // Redirigir automáticamente al formulario de verificación de código, pasando el correo por la URL
-            //urlencode asegura que el correo sea seguro al pasarlo por la URL.
             header('Location: verificar_codigo.php?correo=' . urlencode($correo));
             exit;
-
-            //Captura cualquier error que ocurra durante el envío y guarda el mensaje de error en la variable $mensaje.
         } catch (Exception $e) {
             // Si ocurre un error al enviar el correo, mostrar el mensaje de error
             $mensaje = 'No se pudo enviar el correo. Error: ' . $mail->ErrorInfo;
         }
-        
-        //Este else pertenece a la parte en la que se consulta si el usuario con ese correo existe en la base de datos.
-        //Si no se encuentra, se guarda un mensaje indicando que el correo no está registrado.
     } else {
         // Si no se encuentra el usuario, mostrar mensaje de error
         $mensaje = 'No se encontró una cuenta con ese correo.';

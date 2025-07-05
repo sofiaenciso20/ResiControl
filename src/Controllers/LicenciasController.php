@@ -1,45 +1,62 @@
 <?php
 
+// Declaramos el espacio de nombres para mantener una estructura organizada
 namespace App\Controllers;
 
+// Importamos clases necesarias
 use PDO;
 use PDOException;
 use App\Config\Database;
 
+// Declaramos la clase controladora para Licencias
 class LicenciasController {
-    private $db;
-    private $conn;
-    
+    private $db;   // Variable que almacenará el objeto de conexión a la base de datos
+    private $conn; // Variable que guardará la conexión activa (PDO)
+
+    // Constructor: se ejecuta automáticamente cuando se crea un objeto de esta clase
     public function __construct() {
+        // Creamos una nueva instancia de Database
         $this->db = new Database();
+        // Obtenemos la conexión a la base de datos
         $this->conn = $this->db->getConnection();
     }
 
-    // Generar código único de licencia
+    // ================================================
+    // MÉTODO PRIVADO: Genera un código único para la licencia
+    // ================================================
     private function generarCodigoLicencia() {
+        // uniqid('LIC-') genera un identificador único que inicia con 'LIC-'
+        // substr(md5(time()), 0, 6) agrega una parte aleatoria adicional
         return strtoupper(uniqid('LIC-') . substr(md5(time()), 0, 6));
     }
 
-    // Crear nueva licencia
+    // ================================================
+    // CREA UNA NUEVA LICENCIA EN LA BASE DE DATOS
+    // ================================================
     public function crearLicencia($datos) {
         try {
+            // Generamos un código de licencia único
             $codigo = $this->generarCodigoLicencia();
-            
-            $sql = "INSERT INTO licencias (
-                codigo_licencia, 
-                nombre_residencial, 
-                fecha_inicio, 
-                fecha_fin, 
-                max_usuarios, 
-                max_residentes, 
-                caracteristicas,
-                estado
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, 'activa')";
 
+            // Consulta SQL con marcadores para insertar los datos
+            $sql = "INSERT INTO licencias (
+                        codigo_licencia, 
+                        nombre_residencial, 
+                        fecha_inicio, 
+                        fecha_fin, 
+                        max_usuarios, 
+                        max_residentes, 
+                        caracteristicas,
+                        estado
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, 'activa')";
+
+            // Preparamos la consulta
             $stmt = $this->conn->prepare($sql);
-            
+
+            // Convertimos las características a formato JSON
             $caracteristicas = json_encode($datos['caracteristicas'] ?? []);
-            
+
+            // Ejecutamos la consulta pasando los valores en orden
             $stmt->execute([
                 $codigo,
                 $datos['nombre_residencial'],
@@ -50,12 +67,14 @@ class LicenciasController {
                 $caracteristicas
             ]);
 
+            // Devolvemos mensaje de éxito
             return [
                 'success' => true,
                 'mensaje' => 'Licencia creada exitosamente',
                 'codigo' => $codigo
             ];
         } catch (PDOException $e) {
+            // Si ocurre error, se captura y se devuelve mensaje
             return [
                 'success' => false,
                 'mensaje' => 'Error al crear la licencia: ' . $e->getMessage()
@@ -63,13 +82,17 @@ class LicenciasController {
         }
     }
 
-    // Obtener todas las licencias
+    // ================================================
+    // OBTIENE TODAS LAS LICENCIAS EXISTENTES
+    // ================================================
     public function obtenerLicencias() {
         try {
+            // Consulta para obtener todas las licencias ordenadas por fecha de creación (descendente)
             $sql = "SELECT * FROM licencias ORDER BY fecha_creacion DESC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
-            
+
+            // Retornamos los resultados en un array asociativo
             return [
                 'success' => true,
                 'data' => $stmt->fetchAll(PDO::FETCH_ASSOC)
@@ -82,15 +105,19 @@ class LicenciasController {
         }
     }
 
-    // Obtener una licencia específica
+    // ================================================
+    // OBTIENE UNA LICENCIA ESPECÍFICA POR ID
+    // ================================================
     public function obtenerLicencia($id) {
         try {
+            // Consulta para buscar una licencia por ID
             $sql = "SELECT * FROM licencias WHERE id = ?";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([$id]);
-            
+
+            // Obtenemos la licencia
             $licencia = $stmt->fetch(PDO::FETCH_ASSOC);
-            
+
             if ($licencia) {
                 return [
                     'success' => true,
@@ -110,22 +137,27 @@ class LicenciasController {
         }
     }
 
-    // Actualizar licencia
+    // ================================================
+    // ACTUALIZA LOS DATOS DE UNA LICENCIA EXISTENTE
+    // ================================================
     public function actualizarLicencia($id, $datos) {
         try {
+            // Consulta para actualizar los datos de una licencia
             $sql = "UPDATE licencias SET 
-                    nombre_residencial = ?,
-                    fecha_fin = ?,
-                    max_usuarios = ?,
-                    max_residentes = ?,
-                    caracteristicas = ?,
-                    estado = ?
+                        nombre_residencial = ?,
+                        fecha_fin = ?,
+                        max_usuarios = ?,
+                        max_residentes = ?,
+                        caracteristicas = ?,
+                        estado = ?
                     WHERE id = ?";
 
             $stmt = $this->conn->prepare($sql);
-            
+
+            // Convertimos las características a JSON
             $caracteristicas = json_encode($datos['caracteristicas'] ?? []);
-            
+
+            // Ejecutamos la actualización
             $stmt->execute([
                 $datos['nombre_residencial'],
                 $datos['fecha_fin'],
@@ -148,19 +180,26 @@ class LicenciasController {
         }
     }
 
-    // Verificar estado de licencia
+    // ================================================
+    // VERIFICA SI UNA LICENCIA ESTÁ ACTIVA Y VIGENTE
+    // ================================================
     public function verificarLicencia($codigo) {
         try {
-            $sql = "SELECT * FROM licencias WHERE codigo_licencia = ? AND estado = 'activa' AND fecha_fin >= CURRENT_DATE";
+            // Buscamos una licencia activa y con fecha válida
+            $sql = "SELECT * FROM licencias 
+                    WHERE codigo_licencia = ? 
+                    AND estado = 'activa' 
+                    AND fecha_fin >= CURRENT_DATE";
+
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([$codigo]);
-            
+
             $licencia = $stmt->fetch(PDO::FETCH_ASSOC);
-            
+
             if ($licencia) {
-                // Verificar límites de uso
+                // Obtenemos el uso actual de la licencia (usuarios/residentes)
                 $usoActual = $this->obtenerEstadisticasUso($codigo);
-                
+
                 return [
                     'success' => true,
                     'valida' => true,
@@ -184,15 +223,18 @@ class LicenciasController {
         }
     }
 
-    // Obtener estadísticas de uso
+    // ================================================
+    // CALCULA CUÁNTOS USUARIOS Y RESIDENTES USAN LA LICENCIA
+    // ================================================
     public function obtenerEstadisticasUso($codigo_licencia) {
         try {
-            // Primero obtener los límites de la licencia
+            // Obtenemos los límites máximos permitidos en la licencia
             $sqlLicencia = "SELECT max_usuarios, max_residentes FROM licencias WHERE codigo_licencia = ?";
             $stmtLicencia = $this->conn->prepare($sqlLicencia);
             $stmtLicencia->execute([$codigo_licencia]);
             $limites = $stmtLicencia->fetch(PDO::FETCH_ASSOC);
 
+            // Si no hay datos, se devuelven valores en cero
             if (!$limites) {
                 return [
                     'total_usuarios' => 0,
@@ -202,19 +244,19 @@ class LicenciasController {
                 ];
             }
 
-            // Obtener total de usuarios
+            // Contar usuarios registrados con esta licencia
             $sqlUsuarios = "SELECT COUNT(*) as total_usuarios FROM usuarios WHERE licencia_id = ?";
             $stmtUsuarios = $this->conn->prepare($sqlUsuarios);
             $stmtUsuarios->execute([$codigo_licencia]);
             $totalUsuarios = $stmtUsuarios->fetch(PDO::FETCH_ASSOC)['total_usuarios'];
 
-            // Obtener total de residentes
+            // Contar residentes (rol = 3)
             $sqlResidentes = "SELECT COUNT(*) as total_residentes FROM usuarios WHERE licencia_id = ? AND role = 3";
             $stmtResidentes = $this->conn->prepare($sqlResidentes);
             $stmtResidentes->execute([$codigo_licencia]);
             $totalResidentes = $stmtResidentes->fetch(PDO::FETCH_ASSOC)['total_residentes'];
 
-            // Calcular porcentajes
+            // Calculamos los porcentajes de uso
             $porcentajeUsuarios = ($limites['max_usuarios'] > 0) 
                 ? round(($totalUsuarios / $limites['max_usuarios']) * 100, 2)
                 : 0;
@@ -223,6 +265,7 @@ class LicenciasController {
                 ? round(($totalResidentes / $limites['max_residentes']) * 100, 2)
                 : 0;
 
+            // Devolvemos todo lo calculado
             return [
                 'total_usuarios' => (int)$totalUsuarios,
                 'total_residentes' => (int)$totalResidentes,
@@ -231,8 +274,8 @@ class LicenciasController {
                 'max_usuarios' => (int)$limites['max_usuarios'],
                 'max_residentes' => (int)$limites['max_residentes']
             ];
-
         } catch (PDOException $e) {
+            // En caso de error, se devuelve todo en cero y se registra en el log
             error_log("Error en obtenerEstadisticasUso: " . $e->getMessage());
             return [
                 'total_usuarios' => 0,
