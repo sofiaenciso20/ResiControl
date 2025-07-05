@@ -3063,6 +3063,7 @@ body.body-contact {
         th, td { border: 1px solid #aaa; padding: 8px; text-align: left; }
         th { background-color: #ddd; }
   
+<<<<<<< HEAD
       /*Estilos específicos de la página*/
 
 .progress {
@@ -3133,3 +3134,5 @@ body.body-contact {
 .bi {
     margin-top: 1rem;
 }
+=======
+>>>>>>> parent of 11e6a27 (licencias commit)

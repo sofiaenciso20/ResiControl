@@ -71,17 +71,3 @@ function tienePermiso($pagina) {
     // Si no tiene acceso total, se revisa si la página actual está en sus permisos
     return in_array($pagina, $role_permissions[$rol]);
 }
-
-return [
-    // Permisos existentes
-    // ... existing code ...
-
-    // Permisos de Licencias (Solo SuperAdmin)
-    'gestion_licencias' => [1],
-    'crear_licencia' => [1],
-    'editar_licencia' => [1],
-    'ver_licencia' => [1],
-    'activar_desactivar_licencia' => [1],
-    
-    // ... existing code ...
-];

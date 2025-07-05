@@ -104,13 +104,6 @@ $usuario_logueado = !empty($_SESSION['is_logged_in']) && !empty($_SESSION['user'
                         Historial de Paquetes
                     </a>
                 <?php endif; ?>
-                <?php if (tienePermiso('gestion_licencias')): ?>
-                    <a class="nav-link <?php echo ($pagina_actual ?? '') === 'licencias' ? 'active' : ''; ?>"
-                        href="/gestion_licencias.php">
-                        <div class="sb-nav-link-icon"><i class="fas fa-key"></i></div>
-                        Gestión de Licencias
-                    </a>
-                <?php endif; ?>
             </div>
         </div>
         <div class="sb-sidenav-footer">
