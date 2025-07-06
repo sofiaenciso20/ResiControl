@@ -1,7 +1,4 @@
 <?php
-// Inicia la sesión para poder usar variables de sesión (como mensajes de error o éxito)
-session_start();
-
 // Incluye la clase Database para poder conectarnos a la base de datos
 require_once __DIR__ . '/../config/Database.php';
 
@@ -112,8 +109,4 @@ class ValidarVisitasController {
     }
 }
 
-// Crea una instancia del controlador
-$controller = new ValidarVisitasController();
 
-// Ejecuta el método de validación si se accede a este archivo directamente
-$controller->validar();
