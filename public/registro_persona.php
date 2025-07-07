@@ -1,8 +1,8 @@
 <?php
-require_once _DIR_ . '/../src/Config/Database.php'; // Incluye la clase de conexión a la base de datos
-require_once _DIR_ . '/../vendor/autoload.php';      // Carga el autoloader de Composer para dependencias externas
-require_once _DIR_ . '/../src/Controllers/PersonaController.php'; // Incluye el controlador de personas
-require_once _DIR_ . '/../src/Config/permissions.php'; // Incluye las funciones de gestión de permisos
+require_once __DIR__ . '/../src/Config/Database.php'; // Incluye la clase de conexión a la base de datos
+require_once __DIR__ . '/../vendor/autoload.php';      // Carga el autoloader de Composer para dependencias externas
+require_once __DIR__ . '/../src/Controllers/PersonaController.php'; // Incluye el controlador de personas
+require_once __DIR__ . '/../src/Config/permissions.php'; // Incluye las funciones de gestión de permisos
 
 use App\Controllers\PersonaController;
  
@@ -32,7 +32,7 @@ $titulo = 'Registro de Persona'; // Título de la página
 $pagina_actual = 'registro';     // Identificador de la página actual para el menú
  
 ob_start(); // Inicia el buffer de salida para capturar el contenido de la vista
-require_once _DIR_ . '/../views/components/registro_persona.php'; // Incluye el componente de la vista de registro de persona
+require_once __DIR__ . '/../views/components/registro_persona.php'; // Incluye el componente de la vista de registro de persona
 $contenido = ob_get_clean(); // Guarda el contenido generado en la variable $contenido
  
-require_once _DIR_ . '/../views/layout/main.php'; // Carga el layout principal de la aplicación, que usará $contenido para mostrar la página completa
+require_once __DIR__ . '/../views/layout/main.php'; // Carga el layout principal de la aplicación, que usará $contenido para mostrar la página completa
