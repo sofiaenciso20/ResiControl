@@ -44,13 +44,24 @@ class PersonaController {
             // Comunes y opcionales
             $empresa = $_POST['empresa'] ?? null;
             $direccion_casa = $_POST['direccion_casa'] ?? null;
-            $id_manzana = null; // si existe, ajustar
             $cantidad_personas = $_POST['cantidad_personas'] ?? null;
             $tiene_animales = $_POST['tiene_animales'] ?? null;
             $cantidad_animales = $_POST['cantidad_animales'] ?? null;
             $direccion_residencia = $_POST['direccion_residencia'] ?? null;
             $id_estado = 1;
             $nit = null;
+            
+            // Campos de residencia para residentes
+            $id_casa = null;
+            $id_apartamento = null;
+            if ($id_rol == 3) { // Solo para residentes
+                $tipo_residencia = $_POST['tipo_residencia'] ?? null;
+                if ($tipo_residencia === 'casa') {
+                    $id_casa = $_POST['id_casa'] ?? null;
+                } elseif ($tipo_residencia === 'apartamento') {
+                    $id_apartamento = $_POST['id_apartamento'] ?? null;
+                }
+            }
 
             // Inicia transacción
             try {
@@ -68,9 +79,9 @@ class PersonaController {
 
                 // Insertar usuario
                 $sql = "INSERT INTO usuarios
-                    (documento, id_tipo_doc, nombre, apellido, telefono, correo, contrasena, id_rol, id_estado, id_manzana, nit, empresa, direccion_casa, cantidad_personas, tiene_animales, cantidad_animales, direccion_residencia)
+                    (documento, id_tipo_doc, nombre, apellido, telefono, correo, contrasena, id_rol, id_estado, nit, empresa, direccion_casa, cantidad_personas, tiene_animales, cantidad_animales, direccion_residencia, id_casa, id_apartamento)
                     VALUES
-                    (:documento, :id_tipo_doc, :nombre, :apellido, :telefono, :correo, :contrasena, :id_rol, :id_estado, :id_manzana, :nit, :empresa, :direccion_casa, :cantidad_personas, :tiene_animales, :cantidad_animales, :direccion_residencia)";
+                    (:documento, :id_tipo_doc, :nombre, :apellido, :telefono, :correo, :contrasena, :id_rol, :id_estado, :nit, :empresa, :direccion_casa, :cantidad_personas, :tiene_animales, :cantidad_animales, :direccion_residencia, :id_casa, :id_apartamento)";
                 
                 $stmt = $conn->prepare($sql);
                 $stmt->bindParam(':documento', $documento);
@@ -82,7 +93,6 @@ class PersonaController {
                 $stmt->bindParam(':contrasena', $contrasena);
                 $stmt->bindParam(':id_rol', $id_rol);
                 $stmt->bindParam(':id_estado', $id_estado);
-                $stmt->bindParam(':id_manzana', $id_manzana);
                 $stmt->bindParam(':nit', $nit);
                 $stmt->bindParam(':empresa', $empresa);
                 $stmt->bindParam(':direccion_casa', $direccion_casa);
@@ -90,10 +100,29 @@ class PersonaController {
                 $stmt->bindParam(':tiene_animales', $tiene_animales);
                 $stmt->bindParam(':cantidad_animales', $cantidad_animales);
                 $stmt->bindParam(':direccion_residencia', $direccion_residencia);
+                $stmt->bindParam(':id_casa', $id_casa);
+                $stmt->bindParam(':id_apartamento', $id_apartamento);
                 
                 if (!$stmt->execute()) {
                     $conn->rollBack();
                     return "Error al registrar la persona.";
+                }
+
+                // Marcar residencia como ocupada si es residente
+                if ($id_rol == 3) {
+                    if ($id_casa) {
+                        $stmt_casa = $conn->prepare("UPDATE casas SET estado = 'ocupada' WHERE id_casa = ?");
+                        if (!$stmt_casa->execute([$id_casa])) {
+                            $conn->rollBack();
+                            return "Error al actualizar el estado de la casa.";
+                        }
+                    } elseif ($id_apartamento) {
+                        $stmt_apto = $conn->prepare("UPDATE apartamentos SET estado = 'ocupado' WHERE id_apartamento = ?");
+                        if (!$stmt_apto->execute([$id_apartamento])) {
+                            $conn->rollBack();
+                            return "Error al actualizar el estado del apartamento.";
+                        }
+                    }
                 }
 
                 // Solo si es habitante, registra vehículo

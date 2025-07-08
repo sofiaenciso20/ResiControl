@@ -22,6 +22,124 @@ if (!tienePermiso('registro_terreno')) {
     exit;
 }
 
+// Manejar peticiones AJAX para gestión de terrenos
+if (isset($_GET['action'])) {
+    require_once __DIR__ . '/../src/config/Database.php';
+    
+    $db = new \App\Config\Database();
+    $conn = $db->getConnection();
+    
+    header('Content-Type: application/json');
+    
+    switch ($_GET['action']) {
+        case 'obtener_manzanas_completo':
+            $sql = "SELECT 
+                        m.id_manzana,
+                        m.cantidad_casas,
+                        COUNT(c.id_casa) as total_casas,
+                        SUM(CASE WHEN c.estado = 'disponible' THEN 1 ELSE 0 END) as disponibles,
+                        SUM(CASE WHEN c.estado = 'ocupada' THEN 1 ELSE 0 END) as ocupadas
+                    FROM manzana m
+                    LEFT JOIN casas c ON m.id_manzana = c.id_manzana
+                    GROUP BY m.id_manzana
+                    ORDER BY m.id_manzana";
+            $stmt = $conn->query($sql);
+            $manzanas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($manzanas);
+            exit;
+            
+        case 'obtener_bloques_completo':
+            $sql = "SELECT 
+                        b.id_bloque,
+                        b.cantidad_apartamentos,
+                        COUNT(a.id_apartamento) as total_apartamentos,
+                        SUM(CASE WHEN a.estado = 'disponible' THEN 1 ELSE 0 END) as disponibles,
+                        SUM(CASE WHEN a.estado = 'ocupado' THEN 1 ELSE 0 END) as ocupados
+                    FROM bloque b
+                    LEFT JOIN apartamentos a ON b.id_bloque = a.id_bloque
+                    GROUP BY b.id_bloque
+                    ORDER BY b.id_bloque";
+            $stmt = $conn->query($sql);
+            $bloques = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($bloques);
+            exit;
+            
+        case 'eliminar_manzana':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $input = json_decode(file_get_contents('php://input'), true);
+                $idManzana = (int)$input['id_manzana'];
+                
+                try {
+                    $conn->beginTransaction();
+                    
+                    // Verificar que no hay casas ocupadas
+                    $stmt = $conn->prepare("SELECT COUNT(*) as ocupadas FROM casas WHERE id_manzana = ? AND estado = 'ocupada'");
+                    $stmt->execute([$idManzana]);
+                    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if ($result['ocupadas'] > 0) {
+                        echo json_encode(['success' => false, 'mensaje' => 'No se puede eliminar: hay casas ocupadas']);
+                        exit;
+                    }
+                    
+                    // Eliminar casas primero
+                    $stmt = $conn->prepare("DELETE FROM casas WHERE id_manzana = ?");
+                    $stmt->execute([$idManzana]);
+                    
+                    // Eliminar manzana
+                    $stmt = $conn->prepare("DELETE FROM manzana WHERE id_manzana = ?");
+                    $stmt->execute([$idManzana]);
+                    
+                    $conn->commit();
+                    echo json_encode(['success' => true, 'mensaje' => 'Manzana eliminada correctamente']);
+                } catch (Exception $e) {
+                    $conn->rollBack();
+                    echo json_encode(['success' => false, 'mensaje' => 'Error al eliminar: ' . $e->getMessage()]);
+                }
+            }
+            exit;
+            
+        case 'eliminar_bloque':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $input = json_decode(file_get_contents('php://input'), true);
+                $idBloque = (int)$input['id_bloque'];
+                
+                try {
+                    $conn->beginTransaction();
+                    
+                    // Verificar que no hay apartamentos ocupados
+                    $stmt = $conn->prepare("SELECT COUNT(*) as ocupados FROM apartamentos WHERE id_bloque = ? AND estado = 'ocupado'");
+                    $stmt->execute([$idBloque]);
+                    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if ($result['ocupados'] > 0) {
+                        echo json_encode(['success' => false, 'mensaje' => 'No se puede eliminar: hay apartamentos ocupados']);
+                        exit;
+                    }
+                    
+                    // Eliminar apartamentos primero
+                    $stmt = $conn->prepare("DELETE FROM apartamentos WHERE id_bloque = ?");
+                    $stmt->execute([$idBloque]);
+                    
+                    // Eliminar bloque
+                    $stmt = $conn->prepare("DELETE FROM bloque WHERE id_bloque = ?");
+                    $stmt->execute([$idBloque]);
+                    
+                    $conn->commit();
+                    echo json_encode(['success' => true, 'mensaje' => 'Bloque eliminado correctamente']);
+                } catch (Exception $e) {
+                    $conn->rollBack();
+                    echo json_encode(['success' => false, 'mensaje' => 'Error al eliminar: ' . $e->getMessage()]);
+                }
+            }
+            exit;
+            
+        default:
+            echo json_encode(['error' => 'Acción no válida']);
+            exit;
+    }
+}
+
 // Recupera un mensaje de sesión, si existe, y luego lo elimina para evitar que se muestre varias veces
 $mensaje = $_SESSION['mensaje'] ?? null;
 unset($_SESSION['mensaje']);

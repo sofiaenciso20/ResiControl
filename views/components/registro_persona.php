@@ -23,15 +23,15 @@
               <div class="mb-3">
                 <label class="form-label">Tipo de Usuario</label>
                 <div class="input-group">
-                  <select class="form-select" name="tipo_usuario" id="tipo_usuario" required>
-                    <option value="">Selecciona</option>
+                <select class="form-select" name="tipo_usuario" id="tipo_usuario" required>
+                  <option value="">Selecciona</option>
                     <?php foreach ($roles as $rol): ?>
                       <option value="<?= htmlspecialchars($rol['rol']) ?>" data-id-rol="<?= $rol['id_rol'] ?>"><?= htmlspecialchars($rol['rol']) ?></option>
                     <?php endforeach; ?>
-                  </select>
+                </select>
                   <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalEditarRoles">
-                    <i class="bi bi-pencil"></i>
-                  </button>
+                      <i class="bi bi-pencil"></i>
+                </button>
                 </div>
                 <div class="invalid-feedback">Por favor selecciona un tipo de usuario.</div>
               </div>
@@ -133,6 +133,55 @@
                   </div>
                 </div>
 
+                <h6 class="mt-3">Residencia</h6>
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label class="form-label">Tipo de Residencia</label>
+                    <select class="form-select" name="tipo_residencia" id="tipo_residencia" required>
+                      <option value="">Selecciona</option>
+                      <option value="casa">Casa (Manzana)</option>
+                      <option value="apartamento">Apartamento (Bloque)</option>
+                    </select>
+                    <div class="invalid-feedback">Selecciona un tipo de residencia.</div>
+                  </div>
+                </div>
+
+                <!-- Campos para Casa -->
+                <div id="campos_casa" class="row" style="display: none;">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Manzana</label>
+                    <select class="form-select" name="id_manzana" id="select_manzana">
+                      <option value="">Selecciona una manzana</option>
+                    </select>
+                    <div class="invalid-feedback">Selecciona una manzana.</div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Casa</label>
+                    <select class="form-select" name="id_casa" id="select_casa">
+                      <option value="">Primero selecciona una manzana</option>
+                    </select>
+                    <div class="invalid-feedback">Selecciona una casa.</div>
+                  </div>
+                </div>
+
+                <!-- Campos para Apartamento -->
+                <div id="campos_apartamento" class="row" style="display: none;">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Bloque</label>
+                    <select class="form-select" name="id_bloque" id="select_bloque">
+                      <option value="">Selecciona un bloque</option>
+                    </select>
+                    <div class="invalid-feedback">Selecciona un bloque.</div>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Apartamento</label>
+                    <select class="form-select" name="id_apartamento" id="select_apartamento">
+                      <option value="">Primero selecciona un bloque</option>
+                    </select>
+                    <div class="invalid-feedback">Selecciona un apartamento.</div>
+                  </div>
+                </div>
+
                 <h6 class="mt-3">Vehículo</h6>
                 <div class="row">
                   <div class="col-md-4 mb-3">
@@ -219,7 +268,7 @@
                     <li class="list-group-item d-flex justify-content-between align-items-center" data-id="<?= $tipo_doc['id_tipo_doc'] ?>">
                       <?= htmlspecialchars($tipo_doc['tipo_documento']) ?>
                       <button type="button" class="btn btn-sm btn-outline-danger btnEliminarTipoIdentificacion">Eliminar</button>
-                    </li>
+                </li>
                   <?php endforeach;
                 } else { ?>
                   <li class="list-group-item text-muted">No hay tipos de documento disponibles o hay un error en la consulta</li>
@@ -373,6 +422,108 @@
       document.getElementById('cantidad_animales_div').style.display = mostrar ? 'block' : 'none';
       if (!mostrar) document.getElementById('cantidad_animales').value = '';
     });
+
+    // Funcionalidad para campos de residencia
+    const tipoResidenciaSelect = document.getElementById('tipo_residencia');
+    const camposCasa = document.getElementById('campos_casa');
+    const camposApartamento = document.getElementById('campos_apartamento');
+    const selectManzana = document.getElementById('select_manzana');
+    const selectCasa = document.getElementById('select_casa');
+    const selectBloque = document.getElementById('select_bloque');
+    const selectApartamento = document.getElementById('select_apartamento');
+
+    // Manejar cambio de tipo de residencia
+    tipoResidenciaSelect?.addEventListener('change', function() {
+      const tipo = this.value;
+      
+      if (tipo === 'casa') {
+        camposCasa.style.display = 'block';
+        camposApartamento.style.display = 'none';
+        cargarManzanas();
+        // Limpiar apartamento
+        selectBloque.value = '';
+        selectApartamento.value = '';
+      } else if (tipo === 'apartamento') {
+        camposCasa.style.display = 'none';
+        camposApartamento.style.display = 'block';
+        cargarBloques();
+        // Limpiar casa
+        selectManzana.value = '';
+        selectCasa.value = '';
+      } else {
+        camposCasa.style.display = 'none';
+        camposApartamento.style.display = 'none';
+      }
+    });
+
+    // Manejar cambio de manzana
+    selectManzana?.addEventListener('change', function() {
+      const idManzana = this.value;
+      if (idManzana) {
+        cargarCasas(idManzana);
+      } else {
+        selectCasa.innerHTML = '<option value="">Primero selecciona una manzana</option>';
+      }
+    });
+
+    // Manejar cambio de bloque
+    selectBloque?.addEventListener('change', function() {
+      const idBloque = this.value;
+      if (idBloque) {
+        cargarApartamentos(idBloque);
+      } else {
+        selectApartamento.innerHTML = '<option value="">Primero selecciona un bloque</option>';
+      }
+    });
+
+    // Funciones para cargar datos dinámicamente
+    function cargarManzanas() {
+      fetch('?action=obtener_manzanas')
+        .then(response => response.json())
+        .then(data => {
+          selectManzana.innerHTML = '<option value="">Selecciona una manzana</option>';
+          data.forEach(manzana => {
+            selectManzana.innerHTML += `<option value="${manzana.id_manzana}">Manzana ${manzana.id_manzana}</option>`;
+          });
+        })
+        .catch(error => console.error('Error cargando manzanas:', error));
+    }
+
+    function cargarBloques() {
+      fetch('?action=obtener_bloques')
+        .then(response => response.json())
+        .then(data => {
+          selectBloque.innerHTML = '<option value="">Selecciona un bloque</option>';
+          data.forEach(bloque => {
+            selectBloque.innerHTML += `<option value="${bloque.id_bloque}">Bloque ${bloque.id_bloque}</option>`;
+          });
+        })
+        .catch(error => console.error('Error cargando bloques:', error));
+    }
+
+    function cargarCasas(idManzana) {
+      fetch(`?action=obtener_casas&id_manzana=${idManzana}`)
+        .then(response => response.json())
+        .then(data => {
+          selectCasa.innerHTML = '<option value="">Selecciona una casa</option>';
+          data.forEach(casa => {
+            selectCasa.innerHTML += `<option value="${casa.id_casa}">Casa ${casa.numero_casa}</option>`;
+          });
+        })
+        .catch(error => console.error('Error cargando casas:', error));
+    }
+
+    function cargarApartamentos(idBloque) {
+      fetch(`?action=obtener_apartamentos&id_bloque=${idBloque}`)
+        .then(response => response.json())
+        .then(data => {
+          selectApartamento.innerHTML = '<option value="">Selecciona un apartamento</option>';
+          data.forEach(apartamento => {
+            selectApartamento.innerHTML += `<option value="${apartamento.id_apartamento}">Apartamento ${apartamento.numero_apartamento}</option>`;
+          });
+        })
+        .catch(error => console.error('Error cargando apartamentos:', error));
+    }
 
     if (contrasena && confirmar) {
       contrasena.addEventListener('input', () => {

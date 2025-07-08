@@ -14,6 +14,56 @@ if (!tienePermiso('registro_persona')) {
     exit;
 }
 
+// Manejar peticiones AJAX para los datos de residencia
+if (isset($_GET['action'])) {
+    $db = new \App\Config\Database();
+    $conn = $db->getConnection();
+    
+    header('Content-Type: application/json');
+    
+    switch ($_GET['action']) {
+        case 'obtener_manzanas':
+            $stmt = $conn->query("SELECT id_manzana FROM manzana ORDER BY id_manzana");
+            $manzanas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($manzanas);
+            exit;
+            
+        case 'obtener_bloques':
+            $stmt = $conn->query("SELECT id_bloque FROM bloque ORDER BY id_bloque");
+            $bloques = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($bloques);
+            exit;
+            
+        case 'obtener_casas':
+            if (isset($_GET['id_manzana'])) {
+                $idManzana = (int)$_GET['id_manzana'];
+                $stmt = $conn->prepare("SELECT id_casa, numero_casa FROM casas WHERE id_manzana = ? AND estado = 'disponible' ORDER BY numero_casa");
+                $stmt->execute([$idManzana]);
+                $casas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                echo json_encode($casas);
+            } else {
+                echo json_encode([]);
+            }
+            exit;
+            
+        case 'obtener_apartamentos':
+            if (isset($_GET['id_bloque'])) {
+                $idBloque = (int)$_GET['id_bloque'];
+                $stmt = $conn->prepare("SELECT id_apartamento, numero_apartamento FROM apartamentos WHERE id_bloque = ? AND estado = 'disponible' ORDER BY numero_apartamento");
+                $stmt->execute([$idBloque]);
+                $apartamentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                echo json_encode($apartamentos);
+            } else {
+                echo json_encode([]);
+            }
+            exit;
+            
+        default:
+            echo json_encode(['error' => 'Acción no válida']);
+            exit;
+    }
+}
+
 // Consulta las marcas de vehículos
 $db = new \App\Config\Database(); // Crea una instancia de la clase Database
 $conn = $db->getConnection();      // Obtiene la conexión PDO a la base de datos

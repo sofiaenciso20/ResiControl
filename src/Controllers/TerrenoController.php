@@ -30,20 +30,32 @@ class TerrenoController {
                 // Obtiene el número de apartamentos desde el formulario
                 $cantidad_apartamentos = $_POST['apartamentos'];
 
-                // Consulta SQL para insertar un nuevo bloque
-                $sql = "INSERT INTO bloque (cantidad_apartamentos) VALUES (:cantidad_apartamentos)";
+                try {
+                    // Iniciar transacción
+                    $conn->beginTransaction();
 
-                // Prepara la sentencia
-                $stmt = $conn->prepare($sql);
+                    // Consulta SQL para insertar un nuevo bloque
+                    $sql = "INSERT INTO bloque (cantidad_apartamentos) VALUES (:cantidad_apartamentos)";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bindParam(':cantidad_apartamentos', $cantidad_apartamentos);
 
-                // Enlaza el parámetro :cantidad_apartamentos con el valor recibido
-                $stmt->bindParam(':cantidad_apartamentos', $cantidad_apartamentos);
+                    if ($stmt->execute()) {
+                        // Obtener el ID del bloque recién creado
+                        $id_bloque = $conn->lastInsertId();
 
-                // Ejecuta la consulta e informa mediante mensaje si fue exitoso o no
-                if ($stmt->execute()) {
-                    $_SESSION['mensaje'] = "✅ ¡Bloque registrado exitosamente!";
-                } else {
-                    $_SESSION['mensaje'] = "❌ Error al registrar el bloque.";
+                        // Auto-generar apartamentos para este bloque
+                        $this->generarApartamentos($conn, $id_bloque, $cantidad_apartamentos);
+
+                        // Confirmar transacción
+                        $conn->commit();
+                        $_SESSION['mensaje'] = "✅ ¡Bloque registrado exitosamente con {$cantidad_apartamentos} apartamentos!";
+                    } else {
+                        $conn->rollBack();
+                        $_SESSION['mensaje'] = "❌ Error al registrar el bloque.";
+                    }
+                } catch (Exception $e) {
+                    $conn->rollBack();
+                    $_SESSION['mensaje'] = "❌ Error al registrar el bloque: " . $e->getMessage();
                 }
 
             } 
@@ -53,20 +65,32 @@ class TerrenoController {
                 // Obtiene el número de casas desde el formulario
                 $cantidad_casas = $_POST['casas'];
 
-                // Consulta SQL para insertar una nueva manzana
-                $sql = "INSERT INTO manzana (cantidad_casas) VALUES (:cantidad_casas)";
+                try {
+                    // Iniciar transacción
+                    $conn->beginTransaction();
 
-                // Prepara la consulta
-                $stmt = $conn->prepare($sql);
+                    // Consulta SQL para insertar una nueva manzana
+                    $sql = "INSERT INTO manzana (cantidad_casas) VALUES (:cantidad_casas)";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bindParam(':cantidad_casas', $cantidad_casas);
 
-                // Enlaza el parámetro con el valor recibido
-                $stmt->bindParam(':cantidad_casas', $cantidad_casas);
+                    if ($stmt->execute()) {
+                        // Obtener el ID de la manzana recién creada
+                        $id_manzana = $conn->lastInsertId();
 
-                // Ejecuta e informa si tuvo éxito
-                if ($stmt->execute()) {
-                    $_SESSION['mensaje'] = "✅ ¡Manzana registrada exitosamente!";
-                } else {
-                    $_SESSION['mensaje'] = "❌ Error al registrar la manzana.";
+                        // Auto-generar casas para esta manzana
+                        $this->generarCasas($conn, $id_manzana, $cantidad_casas);
+
+                        // Confirmar transacción
+                        $conn->commit();
+                        $_SESSION['mensaje'] = "✅ ¡Manzana registrada exitosamente con {$cantidad_casas} casas!";
+                    } else {
+                        $conn->rollBack();
+                        $_SESSION['mensaje'] = "❌ Error al registrar la manzana.";
+                    }
+                } catch (Exception $e) {
+                    $conn->rollBack();
+                    $_SESSION['mensaje'] = "❌ Error al registrar la manzana: " . $e->getMessage();
                 }
 
             } 
@@ -78,6 +102,30 @@ class TerrenoController {
             // Redirige al formulario de registro de terreno, mostrando el mensaje de sesión
             header("Location: /registro_terreno.php");
             exit();
+        }
+    }
+
+    // Método para generar apartamentos automáticamente al crear un bloque
+    private function generarApartamentos($conn, $id_bloque, $cantidad_apartamentos) {
+        for ($i = 1; $i <= $cantidad_apartamentos; $i++) {
+            // Crear número de apartamento con formato: primer dígito = número de bloque, siguientes = número secuencial
+            $numero_apartamento = $id_bloque . str_pad($i, 2, '0', STR_PAD_LEFT);
+            
+            $sql = "INSERT INTO apartamentos (id_bloque, numero_apartamento, estado) VALUES (?, ?, 'disponible')";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$id_bloque, $numero_apartamento]);
+        }
+    }
+
+    // Método para generar casas automáticamente al crear una manzana
+    private function generarCasas($conn, $id_manzana, $cantidad_casas) {
+        for ($i = 1; $i <= $cantidad_casas; $i++) {
+            // Crear número de casa con formato: Manzana + número secuencial
+            $numero_casa = "M" . $id_manzana . "-" . str_pad($i, 2, '0', STR_PAD_LEFT);
+            
+            $sql = "INSERT INTO casas (id_manzana, numero_casa, estado) VALUES (?, ?, 'disponible')";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$id_manzana, $numero_casa]);
         }
     }
 }

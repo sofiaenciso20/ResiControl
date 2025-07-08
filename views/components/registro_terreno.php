@@ -36,7 +36,10 @@
             </div>
 
             <div class="text-end">
-              <button type="submit" class="btn btn-success">Registrar Terreno</button>
+              <button type="submit" class="btn btn-success me-2">Registrar Terreno</button>
+              <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalGestionTerrenos">
+                <i class="bi bi-gear"></i> Gestionar Terrenos
+              </button>
             </div>
           </form>
         </div>
@@ -120,4 +123,215 @@
       });
     });
   });
+</script>
+
+<!-- Modal para gestionar terrenos -->
+<div class="modal fade" id="modalGestionTerrenos" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Gestión de Terrenos</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Pestañas -->
+        <ul class="nav nav-tabs" id="gestionTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="manzanas-tab" data-bs-toggle="tab" data-bs-target="#manzanas" type="button" role="tab">
+              <i class="bi bi-house"></i> Manzanas
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="bloques-tab" data-bs-toggle="tab" data-bs-target="#bloques" type="button" role="tab">
+              <i class="bi bi-building"></i> Bloques
+            </button>
+          </li>
+        </ul>
+
+        <!-- Contenido de pestañas -->
+        <div class="tab-content" id="gestionTabContent">
+          <!-- Pestaña Manzanas -->
+          <div class="tab-pane fade show active" id="manzanas" role="tabpanel">
+            <div class="mt-3">
+              <h6>Manzanas Existentes</h6>
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Cantidad de Casas</th>
+                      <th>Casas Disponibles</th>
+                      <th>Casas Ocupadas</th>
+                      <th>Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tablaManzanas">
+                    <tr>
+                      <td colspan="5" class="text-center">Cargando...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pestaña Bloques -->
+          <div class="tab-pane fade" id="bloques" role="tabpanel">
+            <div class="mt-3">
+              <h6>Bloques Existentes</h6>
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Cantidad de Apartamentos</th>
+                      <th>Apartamentos Disponibles</th>
+                      <th>Apartamentos Ocupados</th>
+                      <th>Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tablaBloques">
+                    <tr>
+                      <td colspan="5" class="text-center">Cargando...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Script adicional para gestión de terrenos -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Cargar datos cuando se abre el modal
+  document.getElementById('modalGestionTerrenos').addEventListener('shown.bs.modal', function() {
+    cargarManzanas();
+    cargarBloques();
+  });
+
+  // Cargar manzanas
+  function cargarManzanas() {
+    fetch('?action=obtener_manzanas_completo')
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById('tablaManzanas');
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No hay manzanas registradas</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.map(manzana => `
+          <tr>
+            <td>Manzana ${manzana.id_manzana}</td>
+            <td>${manzana.cantidad_casas}</td>
+            <td><span class="badge bg-success">${manzana.disponibles}</span></td>
+            <td><span class="badge bg-warning">${manzana.ocupadas}</span></td>
+            <td>
+              ${manzana.disponibles == manzana.cantidad_casas ? 
+                `<button class="btn btn-sm btn-outline-danger" onclick="eliminarManzana(${manzana.id_manzana})">
+                  <i class="bi bi-trash"></i> Eliminar
+                </button>` :
+                `<span class="text-muted">No se puede eliminar (tiene casas ocupadas)</span>`
+              }
+            </td>
+          </tr>
+        `).join('');
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('tablaManzanas').innerHTML = 
+          '<tr><td colspan="5" class="text-center text-danger">Error al cargar datos</td></tr>';
+      });
+  }
+
+  // Cargar bloques
+  function cargarBloques() {
+    fetch('?action=obtener_bloques_completo')
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById('tablaBloques');
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No hay bloques registrados</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.map(bloque => `
+          <tr>
+            <td>Bloque ${bloque.id_bloque}</td>
+            <td>${bloque.cantidad_apartamentos}</td>
+            <td><span class="badge bg-success">${bloque.disponibles}</span></td>
+            <td><span class="badge bg-warning">${bloque.ocupados}</span></td>
+            <td>
+              ${bloque.disponibles == bloque.cantidad_apartamentos ? 
+                `<button class="btn btn-sm btn-outline-danger" onclick="eliminarBloque(${bloque.id_bloque})">
+                  <i class="bi bi-trash"></i> Eliminar
+                </button>` :
+                `<span class="text-muted">No se puede eliminar (tiene apartamentos ocupados)</span>`
+              }
+            </td>
+          </tr>
+        `).join('');
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('tablaBloques').innerHTML = 
+          '<tr><td colspan="5" class="text-center text-danger">Error al cargar datos</td></tr>';
+      });
+  }
+
+  // Funciones globales para eliminar
+  window.eliminarManzana = function(idManzana) {
+    if (confirm('¿Está seguro que desea eliminar la Manzana ' + idManzana + ' y todas sus casas?')) {
+      fetch('?action=eliminar_manzana', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_manzana: idManzana })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Manzana eliminada exitosamente');
+          cargarManzanas();
+        } else {
+          alert('Error: ' + data.mensaje);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error al eliminar la manzana');
+      });
+    }
+  };
+
+  window.eliminarBloque = function(idBloque) {
+    if (confirm('¿Está seguro que desea eliminar el Bloque ' + idBloque + ' y todos sus apartamentos?')) {
+      fetch('?action=eliminar_bloque', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_bloque: idBloque })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Bloque eliminado exitosamente');
+          cargarBloques();
+        } else {
+          alert('Error: ' + data.mensaje);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error al eliminar el bloque');
+      });
+    }
+  };
+});
 </script>
