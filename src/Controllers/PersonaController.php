@@ -30,20 +30,15 @@ class PersonaController {
             $correo = $_POST['correo'] ?? '';
             $contrasena = password_hash($_POST['contrasena'] ?? '', PASSWORD_DEFAULT);
 
-            // Mapeo del rol
-            switch ($tipo_usuario) {
-                case 'vigilante':
-                    $id_rol = 4;
-                    break;
-                case 'habitante':
-                case 'residente':
-                    $id_rol = 3;
-                    break;
-                case 'administrador':
-                    $id_rol = 2;
-                    break;
-                default:
-                    $id_rol = null;
+            // Mapeo dinámico del rol desde la base de datos
+            $id_rol = null;
+            if (!empty($tipo_usuario)) {
+                $stmt_rol = $conn->prepare("SELECT id_rol FROM roles WHERE rol = ?");
+                $stmt_rol->execute([$tipo_usuario]);
+                $rol_data = $stmt_rol->fetch(PDO::FETCH_ASSOC);
+                if ($rol_data) {
+                    $id_rol = $rol_data['id_rol'];
+                }
             }
 
             // Comunes y opcionales
@@ -95,15 +90,13 @@ class PersonaController {
                 $stmt->bindParam(':tiene_animales', $tiene_animales);
                 $stmt->bindParam(':cantidad_animales', $cantidad_animales);
                 $stmt->bindParam(':direccion_residencia', $direccion_residencia);
-                //ejecuta la consulta
+                
                 if (!$stmt->execute()) {
-                    //no deja cambiar cosas en la base de datos si hay un error
                     $conn->rollBack();
                     return "Error al registrar la persona.";
                 }
 
                 // Solo si es habitante, registra vehículo
-                 // Solo si es habitante, registra vehículo
                 if ($id_rol == 3) {
                     $id_tipo_vehi = $_POST['id_tipo_vehi'] ?? null;
                     $placa = $_POST['placa'] ?? null;
@@ -200,6 +193,165 @@ class PersonaController {
             return [
                 'success' => false,
                 'mensaje' => 'Error al crear el usuario'
+            ];
+        }
+    }
+
+    // Métodos para manejar los tipos y marcas
+    public function agregarTipoVehiculo($tipo) {
+        try {
+            $sql = "INSERT INTO tipo_vehiculos (tipo_vehiculos) VALUES (?)";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$tipo]);
+            
+            return [
+                'success' => true,
+                'id' => $this->conn->lastInsertId(),
+                'mensaje' => 'Tipo de vehículo agregado exitosamente'
+            ];
+        } catch (PDOException $e) {
+            error_log("Error en agregarTipoVehiculo: " . $e->getMessage());
+            return [
+                'success' => false,
+                'mensaje' => 'Error al agregar tipo de vehículo'
+            ];
+        }
+    }
+
+    public function eliminarTipoVehiculo($id) {
+        try {
+            $sql = "DELETE FROM tipo_vehiculos WHERE id_tipo_vehi = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id]);
+            
+            return [
+                'success' => $stmt->rowCount() > 0,
+                'mensaje' => $stmt->rowCount() > 0 ? 'Tipo de vehículo eliminado' : 'No se encontró el tipo de vehículo'
+            ];
+        } catch (PDOException $e) {
+            error_log("Error en eliminarTipoVehiculo: " . $e->getMessage());
+            return [
+                'success' => false,
+                'mensaje' => 'Error al eliminar tipo de vehículo'
+            ];
+        }
+    }
+
+    public function agregarMarca($marca) {
+        try {
+            $sql = "INSERT INTO marca (marca) VALUES (?)";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$marca]);
+            
+            return [
+                'success' => true,
+                'id' => $this->conn->lastInsertId(),
+                'mensaje' => 'Marca agregada exitosamente'
+            ];
+        } catch (PDOException $e) {
+            error_log("Error en agregarMarca: " . $e->getMessage());
+            return [
+                'success' => false,
+                'mensaje' => 'Error al agregar marca'
+            ];
+        }
+    }
+
+    public function eliminarMarca($id) {
+        try {
+            $sql = "DELETE FROM marca WHERE id_marca = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id]);
+            
+            return [
+                'success' => $stmt->rowCount() > 0,
+                'mensaje' => $stmt->rowCount() > 0 ? 'Marca eliminada' : 'No se encontró la marca'
+            ];
+        } catch (PDOException $e) {
+            error_log("Error en eliminarMarca: " . $e->getMessage());
+            return [
+                'success' => false,
+                'mensaje' => 'Error al eliminar marca'
+            ];
+        }
+    }
+
+    // Métodos para manejar tipos de documento
+    public function agregarTipoDocumento($tipo) {
+        try {
+            $sql = "INSERT INTO tipo_documento (tipo_documento) VALUES (?)";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$tipo]);
+            
+            return [
+                'success' => true,
+                'id' => $this->conn->lastInsertId(),
+                'mensaje' => 'Tipo de documento agregado exitosamente'
+            ];
+        } catch (PDOException $e) {
+            error_log("Error en agregarTipoDocumento: " . $e->getMessage());
+            return [
+                'success' => false,
+                'mensaje' => 'Error al agregar tipo de documento'
+            ];
+        }
+    }
+
+    public function eliminarTipoDocumento($id) {
+        try {
+            $sql = "DELETE FROM tipo_documento WHERE id_tipo_doc = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id]);
+            
+            return [
+                'success' => $stmt->rowCount() > 0,
+                'mensaje' => $stmt->rowCount() > 0 ? 'Tipo de documento eliminado' : 'No se encontró el tipo de documento'
+            ];
+        } catch (PDOException $e) {
+            error_log("Error en eliminarTipoDocumento: " . $e->getMessage());
+            return [
+                'success' => false,
+                'mensaje' => 'Error al eliminar tipo de documento'
+            ];
+        }
+    }
+
+    // Métodos para manejar roles de usuario
+    public function agregarRol($rol) {
+        try {
+            $sql = "INSERT INTO roles (rol) VALUES (?)";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$rol]);
+            
+            return [
+                'success' => true,
+                'id' => $this->conn->lastInsertId(),
+                'mensaje' => 'Rol agregado exitosamente'
+            ];
+        } catch (PDOException $e) {
+            error_log("Error en agregarRol: " . $e->getMessage());
+            return [
+                'success' => false,
+                'mensaje' => 'Error al agregar rol'
+            ];
+        }
+    }
+
+    public function eliminarRol($id) {
+        try {
+            $sql = "DELETE FROM roles WHERE id_rol = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute([$id]);
+            
+            return [
+                'success' => $stmt->rowCount() > 0,
+                'mensaje' => $stmt->rowCount() > 0 ? 'Rol eliminado' : 'No se encontró el rol'
+            ];
+        } catch (PDOException $e) {
+            error_log("Error en eliminarRol: " . $e->getMessage());
+            return [
+                'success' => false,
+                'mensaje' => 'Error al eliminar rol'
             ];
         }
     }

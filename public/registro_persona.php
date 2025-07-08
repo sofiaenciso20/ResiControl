@@ -24,6 +24,14 @@ $marcas = $stmt->fetchAll(PDO::FETCH_ASSOC); // Obtiene los resultados como arra
 $stmtTipos = $conn->query("SELECT id_tipo_vehi, tipo_vehiculos FROM tipo_vehiculos"); // Consulta todos los tipos de vehículo
 $tipos = $stmtTipos->fetchAll(PDO::FETCH_ASSOC); // Obtiene los resultados como array asociativo
 
+// Consulta los tipos de documento
+$stmtTiposDocs = $conn->query("SELECT id_tipo_doc, tipo_documento FROM tipo_documento"); // Consulta todos los tipos de documento
+$tipos_documento = $stmtTiposDocs->fetchAll(PDO::FETCH_ASSOC); // Obtiene los resultados como array asociativo
+
+// Consulta los roles de usuario (excluyendo Super Administrador por seguridad)
+$stmtRoles = $conn->query("SELECT id_rol, rol FROM roles WHERE id_rol != 1"); // Excluye el Super Administrador (id_rol = 1)
+$roles = $stmtRoles->fetchAll(PDO::FETCH_ASSOC); // Obtiene los resultados como array asociativo
+
 // Instancia el controlador de personas y procesa el registro si el formulario fue enviado
 $controller = new PersonaController();
 $mensaje = $controller->registrar(); // Procesa el registro y devuelve un mensaje de éxito o error

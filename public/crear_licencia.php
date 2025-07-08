@@ -31,11 +31,31 @@ try {
     error_log('Datos recibidos: ' . print_r($datos, true));
 
     // Validar datos requeridos
-    $camposRequeridos = ['nombre_residencial', 'fecha_inicio', 'fecha_fin', 'max_usuarios', 'max_residentes'];
+    $camposRequeridos = ['id_administrador', 'nombre_residencial', 'fecha_inicio', 'fecha_fin', 'max_usuarios', 'max_residentes'];
     foreach ($camposRequeridos as $campo) {
         if (!isset($datos[$campo]) || empty($datos[$campo])) {
             throw new Exception("El campo $campo es requerido");
         }
+    }
+
+    // Validar que el administrador existe y tiene rol 2
+    require_once __DIR__ . '/../src/Config/database.php';
+    $db = new \App\Config\Database();
+    $conn = $db->getConnection();
+    
+    $stmtAdmin = $conn->prepare("SELECT documento FROM usuarios WHERE documento = ? AND id_rol = 2 AND id_estado = 1");
+    $stmtAdmin->execute([$datos['id_administrador']]);
+    
+    if (!$stmtAdmin->fetch()) {
+        throw new Exception('El administrador seleccionado no es válido');
+    }
+    
+    // Verificar que el administrador no tenga ya una licencia asignada
+    $stmtLicencia = $conn->prepare("SELECT id_licencia FROM usuarios WHERE documento = ? AND id_licencia IS NOT NULL");
+    $stmtLicencia->execute([$datos['id_administrador']]);
+    
+    if ($stmtLicencia->fetch()) {
+        throw new Exception('El administrador seleccionado ya tiene una licencia asignada');
     }
 
     // Validar fechas

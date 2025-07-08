@@ -32,6 +32,26 @@ try {
     $licencias = [];
 }
 
+// 5. Obtener administradores para el select (solo rol 2)
+$administradores = [];
+try {
+    // Conexión a la base de datos para obtener administradores
+    require_once __DIR__ . '/../src/Config/database.php';
+    $db = new \App\Config\Database();
+    $conn = $db->getConnection();
+    
+    $sqlAdmins = "SELECT documento, CONCAT(nombre, ' ', apellido) AS nombre_completo, correo 
+                  FROM usuarios 
+                  WHERE id_rol = 2 AND id_estado = 1 
+                  ORDER BY nombre, apellido";
+    $stmt = $conn->prepare($sqlAdmins);
+    $stmt->execute();
+    $administradores = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    error_log("Error al obtener administradores: " . $e->getMessage());
+    $administradores = [];
+}
+
 // 4. Inicia el buffer de salida para renderizar la vista
 ob_start();
 ?>
@@ -72,6 +92,7 @@ ob_start();
                                 <tr>
                                     <th>Código</th>
                                     <th>Residencial</th>
+                                    <th>Administrador</th>
                                     <th>Estado</th>
                                     <th>Fecha Inicio</th>
                                     <th>Fecha Fin</th>
@@ -84,7 +105,7 @@ ob_start();
                                 <?php if (empty($licencias)): ?>
                                 <!-- Si no hay licencias, muestra mensaje -->
                                 <tr>
-                                    <td colspan="8" class="text-center">No hay licencias registradas</td>
+                                    <td colspan="9" class="text-center">No hay licencias registradas</td>
                                 </tr>
                                 <?php else: ?>
                                 <?php foreach ($licencias as $licencia): 
@@ -97,6 +118,16 @@ ob_start();
                                 <tr>
                                     <td><?php echo htmlspecialchars($licencia['codigo_licencia']); ?></td>
                                     <td><?php echo htmlspecialchars($licencia['nombre_residencial']); ?></td>
+                                    <td>
+                                        <?php if (!empty($licencia['administrador_nombre'])): ?>
+                                            <div class="d-flex flex-column">
+                                                <span class="fw-bold"><?php echo htmlspecialchars($licencia['administrador_nombre']); ?></span>
+                                                <small class="text-muted"><?php echo htmlspecialchars($licencia['administrador_correo']); ?></small>
+                                            </div>
+                                        <?php else: ?>
+                                            <span class="text-muted">Sin asignar</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td>
                                         <!-- Badge de estado -->
                                         <span class="badge bg-<?php echo $estado_clase; ?>">
@@ -191,6 +222,19 @@ ob_start();
             <form id="formCrearLicencia" onsubmit="return crearLicencia(event)">
                 <div class="modal-body">
                     <div class="row g-3">
+                        <div class="col-md-12">
+                            <label for="id_administrador" class="form-label">Administrador Responsable</label>
+                            <select class="form-select" id="id_administrador" name="id_administrador" required>
+                                <option value="">Seleccione un administrador</option>
+                                <?php foreach ($administradores as $admin): ?>
+                                    <option value="<?php echo htmlspecialchars($admin['documento']); ?>">
+                                        <?php echo htmlspecialchars($admin['nombre_completo']); ?> 
+                                        (<?php echo htmlspecialchars($admin['correo']); ?>)
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="form-text">Esta licencia será asignada al administrador seleccionado</div>
+                        </div>
                         <div class="col-md-12">
                             <label for="nombre_residencial" class="form-label">Nombre del Residencial</label>
                             <input type="text" class="form-control" id="nombre_residencial" name="nombre_residencial" required>
@@ -338,6 +382,7 @@ function crearLicencia(event) {
     const form = event.target;
     const formData = new FormData(form);
     const datos = {
+        id_administrador: formData.get('id_administrador'),
         nombre_residencial: formData.get('nombre_residencial'),
         fecha_inicio: formData.get('fecha_inicio'),
         fecha_fin: formData.get('fecha_fin'),

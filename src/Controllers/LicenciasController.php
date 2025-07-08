@@ -26,6 +26,10 @@ class LicenciasController {
         try {
             $codigo = $this->generarCodigoLicencia();
             
+            // Iniciar transacción para asegurar la integridad de los datos
+            $this->conn->beginTransaction();
+            
+            // 1. Crear la licencia
             $sql = "INSERT INTO licencias (
                 codigo_licencia, 
                 nombre_residencial, 
@@ -50,16 +54,45 @@ class LicenciasController {
                 $datos['max_residentes'],
                 $caracteristicas
             ]);
+            
+            $licencia_id = $this->conn->lastInsertId();
+            
+            // 2. Asignar la licencia al administrador
+            if (isset($datos['id_administrador']) && !empty($datos['id_administrador'])) {
+                $sqlUpdateAdmin = "UPDATE usuarios SET id_licencia = ? WHERE documento = ? AND id_rol = 2";
+                $stmtUpdateAdmin = $this->conn->prepare($sqlUpdateAdmin);
+                $stmtUpdateAdmin->execute([$licencia_id, $datos['id_administrador']]);
+                
+                // Verificar que se actualizó correctamente
+                if ($stmtUpdateAdmin->rowCount() === 0) {
+                    throw new Exception('No se pudo asignar la licencia al administrador seleccionado');
+                }
+            }
+            
+            // 3. Registrar en historial
+            $this->registrarHistorial($licencia_id, 'creacion', [
+                'administrador_asignado' => $datos['id_administrador'] ?? null,
+                'fecha_creacion' => date('Y-m-d H:i:s')
+            ]);
+            
+            $this->conn->commit();
 
             return [
                 'success' => true,
-                'mensaje' => 'Licencia creada exitosamente',
+                'mensaje' => 'Licencia creada y asignada exitosamente',
                 'codigo' => $codigo
             ];
         } catch (PDOException $e) {
+            $this->conn->rollback();
             return [
                 'success' => false,
                 'mensaje' => 'Error al crear la licencia: ' . $e->getMessage()
+            ];
+        } catch (Exception $e) {
+            $this->conn->rollback();
+            return [
+                'success' => false,
+                'mensaje' => $e->getMessage()
             ];
         }
     }
@@ -67,7 +100,12 @@ class LicenciasController {
     // Obtener todas las licencias
     public function obtenerLicencias() {
         try {
-            $sql = "SELECT * FROM licencias ORDER BY fecha_creacion DESC";
+            $sql = "SELECT l.*, 
+                           CONCAT(u.nombre, ' ', u.apellido) as administrador_nombre,
+                           u.correo as administrador_correo
+                    FROM licencias l
+                    LEFT JOIN usuarios u ON l.id = u.id_licencia AND u.id_rol = 2
+                    ORDER BY l.fecha_creacion DESC";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             
@@ -127,6 +165,18 @@ class LicenciasController {
             return $stmt->execute([$idLicencia, $accion, $detalles]);
         } catch (PDOException $e) {
             error_log("Error al registrar cambio de estado: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    private function registrarHistorial($idLicencia, $accion, $detalles) {
+        try {
+            $detallesJson = json_encode($detalles);
+            $sql = "INSERT INTO historial_licencias (id_licencia, accion, detalles) VALUES (?, ?, ?)";
+            $stmt = $this->conn->prepare($sql);
+            return $stmt->execute([$idLicencia, $accion, $detallesJson]);
+        } catch (PDOException $e) {
+            error_log("Error al registrar historial: " . $e->getMessage());
             return false;
         }
     }
@@ -290,40 +340,42 @@ class LicenciasController {
     // Obtener estadísticas de uso
     public function obtenerEstadisticasUso($codigo_licencia) {
         try {
-            // Primero obtener los límites de la licencia
-            $sqlLicencia = "SELECT max_usuarios, max_residentes FROM licencias WHERE codigo_licencia = ?";
+            // Primero obtener los límites y el ID de la licencia
+            $sqlLicencia = "SELECT id, max_usuarios, max_residentes FROM licencias WHERE codigo_licencia = ?";
             $stmtLicencia = $this->conn->prepare($sqlLicencia);
             $stmtLicencia->execute([$codigo_licencia]);
-            $limites = $stmtLicencia->fetch(PDO::FETCH_ASSOC);
+            $licencia = $stmtLicencia->fetch(PDO::FETCH_ASSOC);
 
-            if (!$limites) {
+            if (!$licencia) {
                 return [
                     'total_usuarios' => 0,
                     'total_residentes' => 0,
                     'porcentaje_usuarios' => 0,
-                    'porcentaje_residentes' => 0
+                    'porcentaje_residentes' => 0,
+                    'max_usuarios' => 0,
+                    'max_residentes' => 0
                 ];
             }
 
-            // Obtener total de usuarios
-            $sqlUsuarios = "SELECT COUNT(*) as total_usuarios FROM usuarios WHERE licencia_id = ?";
+            // Obtener total de usuarios asignados a esta licencia
+            $sqlUsuarios = "SELECT COUNT(*) as total_usuarios FROM usuarios WHERE id_licencia = ?";
             $stmtUsuarios = $this->conn->prepare($sqlUsuarios);
-            $stmtUsuarios->execute([$codigo_licencia]);
+            $stmtUsuarios->execute([$licencia['id']]);
             $totalUsuarios = $stmtUsuarios->fetch(PDO::FETCH_ASSOC)['total_usuarios'];
 
-            // Obtener total de residentes
-            $sqlResidentes = "SELECT COUNT(*) as total_residentes FROM usuarios WHERE licencia_id = ? AND role = 3";
+            // Obtener total de residentes asignados a esta licencia
+            $sqlResidentes = "SELECT COUNT(*) as total_residentes FROM usuarios WHERE id_licencia = ? AND id_rol = 3";
             $stmtResidentes = $this->conn->prepare($sqlResidentes);
-            $stmtResidentes->execute([$codigo_licencia]);
+            $stmtResidentes->execute([$licencia['id']]);
             $totalResidentes = $stmtResidentes->fetch(PDO::FETCH_ASSOC)['total_residentes'];
 
             // Calcular porcentajes
-            $porcentajeUsuarios = ($limites['max_usuarios'] > 0) 
-                ? round(($totalUsuarios / $limites['max_usuarios']) * 100, 2)
+            $porcentajeUsuarios = ($licencia['max_usuarios'] > 0) 
+                ? round(($totalUsuarios / $licencia['max_usuarios']) * 100, 2)
                 : 0;
 
-            $porcentajeResidentes = ($limites['max_residentes'] > 0)
-                ? round(($totalResidentes / $limites['max_residentes']) * 100, 2)
+            $porcentajeResidentes = ($licencia['max_residentes'] > 0)
+                ? round(($totalResidentes / $licencia['max_residentes']) * 100, 2)
                 : 0;
 
             return [
@@ -331,8 +383,8 @@ class LicenciasController {
                 'total_residentes' => (int)$totalResidentes,
                 'porcentaje_usuarios' => $porcentajeUsuarios,
                 'porcentaje_residentes' => $porcentajeResidentes,
-                'max_usuarios' => (int)$limites['max_usuarios'],
-                'max_residentes' => (int)$limites['max_residentes']
+                'max_usuarios' => (int)$licencia['max_usuarios'],
+                'max_residentes' => (int)$licencia['max_residentes']
             ];
 
         } catch (PDOException $e) {
